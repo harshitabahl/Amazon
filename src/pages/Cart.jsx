@@ -220,7 +220,7 @@ const Cart = () => {
 
             <Product>
               <ProductDetail>
-                <Image src="/Shoes.png" />
+                <Image src="/shoes.png" />
                 <Details>
                   <ProductName><b>Product:</b> JESSIE THUNDER SHOES</ProductName>
                   <ProductId><b>ID:</b> 987654321</ProductId>
