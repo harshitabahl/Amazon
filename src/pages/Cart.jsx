@@ -205,6 +205,7 @@ const Cart = () => {
       <Announcement/>
       <Wrapper>
         <Title>YOUR BAG</Title>
+        
 
         <Top>
           <TopButton>CONTINUE SHOPPING</TopButton>
