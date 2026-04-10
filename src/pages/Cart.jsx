@@ -161,7 +161,7 @@ const Summary = styled.div`
   border: 0.5px solid lightgray; 
   border-radius: 10px;
   padding: 10px;
-  height: 40vh;
+  height: 50vh;
   margin: 0 auto;  
 
   ${mobile`
