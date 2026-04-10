@@ -162,6 +162,7 @@ const Summary = styled.div`
   border-radius: 10px;
   padding: 10px;
   height: 40vh;
+  margin: 0 auto;  
 
   ${mobile`
     width: 100%;
@@ -170,7 +171,9 @@ const Summary = styled.div`
 `;
 
 const SummaryTitle = styled.h1`
-  font-weight: 200;
+font-weight: 200;
+  display: flex;
+justify-content: space-between;
 `;
 
 const SummaryItem = styled.div`
@@ -210,8 +213,6 @@ const Cart = () => {
             <TopText>Shopping Bag (2)</TopText>
             <TopText>Your Wishlist (0)</TopText>
           </TopTexts>
-
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
 
         <Bottom>
