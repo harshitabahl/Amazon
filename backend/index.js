@@ -4,8 +4,13 @@ require("dotenv").config();
 
 const app = express();
 
-// middleware (important later for API)
+const productRoute = require("./routes/product");
+
+// middleware
 app.use(express.json());
+
+// routes
+app.use("/api/products", productRoute);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected 🚀"))

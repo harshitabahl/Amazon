@@ -1,93 +1,218 @@
 import styled from "styled-components";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Announcement from "../components/Announcement";
+import Newsletter from "../components/Newsletter";
+import Footer from "../components/Footer";
+import { Add, Remove } from "@mui/icons-material";
+import { mobile } from "../responsive";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const Info = styled.div`
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.2);
-  z-index: 3;
+const Container = styled.div``;
+
+const Wrapper = styled.div`
+  padding: 50px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s ease;
-  cursor: pointer;
+
+  ${mobile`
+    flex-direction: column;
+    padding: 10px;
+  `}
 `;
 
-const Container = styled.div`
+const ImgContainer = styled.div`
   flex: 1;
-  margin: 5px;
-  min-width: 280px;
-  height: 350px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5fbfd;
-  position: relative;
-
-  &:hover ${Info} {
-    opacity: 1;
-  }
-`;
-
-const Circle = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background-color: white;
-  position: absolute;
 `;
 
 const Image = styled.img`
-  height: 75%;
-  z-index: 2;
+  width: 100%;
+  height: 90vh;
+  object-fit: cover;
+
+  ${mobile`
+    height: 40vh;
+  `}
 `;
 
-const Icon = styled.div`
-  width: 40px;
-  height: 40px;
+const InfoContainer = styled.div`
+  flex: 1;
+  padding: 0px 50px;
+
+  ${mobile`
+    padding: 10px;
+  `}
+`;
+
+const Title = styled.h1`
+  font-weight: 200;
+`;
+
+const Desc = styled.p`
+  margin: 20px 0px;
+`;
+
+const Price = styled.span`
+  font-weight: 100;
+  font-size: 40px;
+`;
+
+const FilterContainer = styled.div`
+  width: 50%;
+  margin: 30px 0px;
+  display: flex;
+  justify-content: space-between;
+
+  ${mobile`
+    width: 100%;
+    flex-direction: column;
+  `}
+`;
+
+const Filter = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const FilterTitle = styled.span`
+  font-size: 20px;
+  font-weight: 200;
+`;
+
+const FilterColor = styled.div`
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background-color: white;
+  background-color: ${(props) => props.color};
+  margin: 0px 5px;
+  cursor: pointer;
+`;
+
+const FilterSize = styled.select`
+  margin-left: 10px;
+  padding: 5px;
+`;
+
+const FilterSizeOption = styled.option``;
+
+const AddContainer = styled.div`
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  ${mobile`
+    width: 100%;
+  `}
+`;
+
+const AmountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+`;
+
+const Amount = styled.span`
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid teal;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px;
-  transition: all 0.5s ease;
+  margin: 0px 5px;
+`;
+
+const Button = styled.button`
+  padding: 15px;
+  border: 2px solid teal;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 500;
 
   &:hover {
-    background-color: #e9f5f5;
-    transform: scale(1.1);
+    background-color: #f8f4f4;
   }
 `;
 
-const Product = ({ item }) => {
+const Product = () => {
+  const location = useLocation();
+
+  const id = location.pathname.split("/")[2];
+
+  const [product, setProduct] = useState({});
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3001/api/products/find/${id}`
+        );
+
+        setProduct(res.data);
+
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getProduct();
+
+  }, [id]);
+
   return (
     <Container>
-      <Circle />
+      <Announcement />
+      <Navbar />
 
-      <Image src={item.img} />
+      <Wrapper>
+        <ImgContainer>
+          <Image src={product.img} />
+        </ImgContainer>
 
-      <Info>
-        <Icon>
-          <ShoppingCartOutlinedIcon />
-        </Icon>
+        <InfoContainer>
+          <Title>{product.title}</Title>
 
-        <Icon>
-          <Link to={`/product/${item._id}`}>
-            <SearchOutlinedIcon />
-          </Link>
-        </Icon>
+          <Desc>{product.desc}</Desc>
 
-        <Icon>
-          <FavoriteBorderOutlinedIcon />
-        </Icon>
-      </Info>
+          <Price>$ {product.price}</Price>
+
+          <FilterContainer>
+            <Filter>
+              <FilterTitle>Color</FilterTitle>
+
+              {product.colors?.map((c) => (
+                <FilterColor color={c} key={c} />
+              ))}
+            </Filter>
+
+            <Filter>
+              <FilterTitle>Size</FilterTitle>
+
+              <FilterSize>
+                {product.size?.map((s) => (
+                  <FilterSizeOption key={s}>
+                    {s}
+                  </FilterSizeOption>
+                ))}
+              </FilterSize>
+            </Filter>
+          </FilterContainer>
+
+          <AddContainer>
+            <AmountContainer>
+              <Remove />
+              <Amount>1</Amount>
+              <Add />
+            </AmountContainer>
+
+            <Button>ADD TO CART</Button>
+          </AddContainer>
+        </InfoContainer>
+      </Wrapper>
+
+      <Newsletter />
+      <Footer />
     </Container>
   );
 };
