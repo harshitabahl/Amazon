@@ -20,6 +20,7 @@
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.15.1",
     "react-scripts": "5.0.1",
+    "react-stripe-checkout": "^2.6.3",
     "styled-components": "^6.3.11",
     "web-vitals": "^2.1.4"
   },

@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Cart from "./pages/Cart";
 import Product from "./pages/Product";
 import ProductList from "./pages/ProductList";
+import Success from "./pages/Success";
 
 const App = () => {
   return (
@@ -23,6 +24,8 @@ const App = () => {
       />
 
       <Route path="/cart" element={<Cart />} />
+
+      <Route path="/Success" element={<Success />} />
 
       <Route path="/login" element={<Login />} />
 

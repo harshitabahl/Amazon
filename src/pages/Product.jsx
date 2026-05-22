@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import { publicRequest } from "../requestMethods";
 import { addProduct } from "../redux/cartRedux";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 
 const Container = styled.div``;
 
@@ -175,7 +176,7 @@ const Product = () => {
   }
 
   const handleClick = ()=>{
-    addProduct({product, quantity});
+    dispatch(addProduct({ ...product, quantity, color, size }));
   };
 
   return (
