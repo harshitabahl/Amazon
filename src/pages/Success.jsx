@@ -1,22 +1,12 @@
-const mongoose = require("mongoose");
+import React from "react";
 
-const OrderSchema = new mongoose.Schema(
-    {
-        userId:{type:String. required: true},
-        products:[
-            {
-                productId:{
-                    type: String,
-                },
-                quantity:{
-                    type: Number,
-                    default: 1,
-                },
-            },
-        ],
-        amount: { type : Number, required : true},
-        address: { type : Object, required : true},
-        status: { type : String, required : "pending"},
-    },
-    { timestamps: true}
-);
+const Success = () => {
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>🎉 Payment Successful!</h1>
+      <p>Your order has been placed successfully.</p>
+    </div>
+  );
+};
+
+export default Success;
