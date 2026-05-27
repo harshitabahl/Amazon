@@ -1,4 +1,6 @@
 const router = require("express").Router();
+require("dotenv").config(); // 👈 ADD THIS (important safety)
+
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 router.post("/payment", async (req, res) => {
@@ -10,7 +12,6 @@ router.post("/payment", async (req, res) => {
     });
 
     res.status(200).json(charge);
-
   } catch (err) {
     res.status(500).json(err);
   }
