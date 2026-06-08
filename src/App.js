@@ -7,7 +7,6 @@ import Cart from "./pages/Cart";
 import Product from "./pages/Product";
 import ProductList from "./pages/ProductList";
 import Success from "./pages/Success";
-import { useSelector } from "react-redux";
 
 const App = () => {
   return (
