@@ -12,21 +12,23 @@ const StyledLink = styled(Link)`
 `;
 
 const Container = styled.div`
-  height: 60px;
+  height: 75px;
+  background: white;
 
   ${mobile`
-    height: 50px;
+    height: 60px;
   `}
 `;
 
 const Wrapper = styled.div`
-  padding: 10px 20px;
+  height: 100%;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   ${mobile`
-    padding: 10px 0px;
+    padding: 0 10px;
   `}
 `;
 
@@ -36,61 +38,77 @@ const Left = styled.div`
   align-items: center;
 `;
 
-const Language = styled.span`
-  font-size: 14px;
-  cursor: pointer;
-
-  ${mobile`
-    display: none;
-  `}
-`;
-
-const SearchContainer = styled.div`
-  border: 1px solid lightgray;
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  padding: 5px;
-`;
-
-const Input = styled.input`
-  border: none;
-  outline: none;
-
-  ${mobile`
-    width: 50px;
-  `}
-`;
-
 const Center = styled.div`
-  flex: 1;
-  text-align: center;
-`;
-
-const Logo = styled.h1`
-  font-weight: bold;
-
-  ${mobile`
-    font-size: 20px;
-  `}
+  flex: 2;
+  display: flex;
+  justify-content: center;
 `;
 
 const Right = styled.div`
-  flex: 1;
+  flex: 1.2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
   ${mobile`
-    flex: 2;
-    justify-content: center;
+    flex: 1;
   `}
 `;
 
+const Logo = styled.h1`
+  font-family: Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  cursor: pointer;
+  color: #111;
+
+  ${mobile`
+    font-size: 22px;
+  `}
+`;
+
+const SearchContainer = styled.div`
+  width: 100%;
+  max-width: 700px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+`;
+
+const Input = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  font-size: 16px;
+`;
+
+const SearchButton = styled.div`
+  width: 55px;
+  height: 50px;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
 const MenuItem = styled.div`
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
   cursor: pointer;
   margin-left: 25px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: #000;
+  }
 
   ${mobile`
     font-size: 12px;
@@ -99,44 +117,63 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = () => {
-  const quantity = useSelector((state) => state.cart.quantity);
+  const quantity = useSelector((state) => state.cart?.quantity || 0);
+  const currentUser = useSelector((state) => state.user?.currentUser);
 
   return (
     <Container>
       <Wrapper>
         <Left>
-          <Language>EN</Language>
-
-          <SearchContainer>
-            <Input placeholder="Search" />
-            <SearchIcon style={{ color: "gray", fontSize: 16 }} />
-          </SearchContainer>
+          <StyledLink to="/">
+            <Logo>amazon</Logo>
+          </StyledLink>
         </Left>
 
         <Center>
-          <StyledLink to="/">
-            <Logo>AMAZON</Logo>
-          </StyledLink>
+          <SearchContainer>
+            <Input placeholder="Search Products" />
+
+            <SearchButton>
+              <SearchIcon />
+            </SearchButton>
+          </SearchContainer>
         </Center>
 
         <Right>
-          <MenuItem>
-            <StyledLink to="/register">
-              REGISTER
-            </StyledLink>
-          </MenuItem>
+          {!currentUser && (
+            <>
+              <MenuItem>
+                <StyledLink to="/register">
+                  REGISTER
+                </StyledLink>
+              </MenuItem>
+
+              <MenuItem>
+                <StyledLink to="/login">
+                  SIGN IN
+                </StyledLink>
+              </MenuItem>
+            </>
+          )}
 
           <MenuItem>
-            <StyledLink to="/login">
-              SIGN IN
-            </StyledLink>
-          </MenuItem>
+            <StyledLink to={currentUser ? "/cart" : "/login"}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                CART
 
-          <MenuItem>
-            <StyledLink to="/cart">
-              <Badge badgeContent={quantity} color="primary">
-                <ShoppingCartOutlined />
-              </Badge>
+                <Badge
+                  badgeContent={currentUser ? quantity : 0}
+                  color="primary"
+                >
+                  <ShoppingCartOutlined />
+                </Badge>
+              </div>
             </StyledLink>
           </MenuItem>
         </Right>

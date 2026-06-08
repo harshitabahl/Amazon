@@ -2,22 +2,22 @@ export const sliderItems = [
   {
     id: 1,
     img: "/classic.png",
-    title: "SUMMER SALE",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF ON NEW ARRIVALS",
+    title: "NEW ARRIVALS 2025",
+    desc: "Discover premium fashion and trending styles with exclusive discounts.",
     bg: "fcf1ed",
   },
   {
     id: 2,
     img: "/pic.png",
-    title: "WINTER SALE",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF ON NEW ARRIVALS",
+    title: "TRENDING COLLECTION",
+    desc: "Hand-picked products designed for everyday comfort and style.",
     bg: "fcf1ed",
   },
   {
     id: 3,
     img: "/popular.png",
-    title: "POPULAR SALE",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF ON NEW ARRIVALS",
+    title: "LIMITED TIME OFFERS",
+    desc: "Get exclusive deals before they disappear.",
     bg: "fbf0f4",
   },
 ];

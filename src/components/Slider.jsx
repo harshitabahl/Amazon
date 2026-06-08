@@ -7,20 +7,19 @@ import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
-  height: calc(100vh - 60px);
+  height: 650px;
   display: flex;
   position: relative;
   overflow: hidden;
 
   ${mobile`
-    height: 50vh;
+    height: 400px;
   `}
 `;
 
-
 const Arrow = styled.div`
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   background-color: white;
   border-radius: 50%;
   display: flex;
@@ -29,16 +28,17 @@ const Arrow = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: ${(props) => props.direction === "left" && "10px"};
-  right: ${(props) => props.direction === "right" && "10px"};
+  left: ${(props) => props.direction === "left" && "15px"};
+  right: ${(props) => props.direction === "right" && "15px"};
   margin: auto;
   cursor: pointer;
-  opacity: 0.5;
-  z-index: 1;
+  opacity: 0.85;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
 
   ${mobile`
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
   `}
 `;
 
@@ -46,84 +46,108 @@ const Wrapper = styled.div`
   height: 100%;
   display: flex;
   transform: translateX(${(props) => props.slideIndex * -100}vw);
-  transition: all 1.5s ease;
+  transition: all 1s ease;
 `;
 
 const Slide = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 650px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background: linear-gradient(
+    135deg,
+    #f8f9fa 0%,
+    #e9ecef 100%
+  );
 
   ${mobile`
     flex-direction: column;
-    justify-content: center;
+    height: 450px;
   `}
 `;
 
 const ImgContainer = styled.div`
-  height: calc(100vh - 60px);
   flex: 1;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const Image = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 90%;
   object-fit: contain;
-`;
-const InfoContainer = styled.div`
-  flex: 1;
-  padding: 50px;
+  filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.18));
 
   ${mobile`
-    padding: 10px;
+    width: 80%;
+    height: 60%;
+  `}
+`;
+
+const InfoContainer = styled.div`
+  flex: 1;
+  padding: 0 60px;
+
+  ${mobile`
+    padding: 10px 20px;
     text-align: center;
   `}
 `;
 
 const Title = styled.h1`
-  font-size: 70px;
+  font-size: 64px;
+  font-weight: 800;
+  color: #111;
+  line-height: 1.1;
+  margin-bottom: 20px;
 
   ${mobile`
-    font-size: 30px;
+    font-size: 32px;
   `}
 `;
 
 const Desc = styled.p`
-  margin: 50px 0px;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 3px;
+  margin: 20px 0 30px;
+  font-size: 18px;
+  color: #555;
+  line-height: 1.6;
+  max-width: 500px;
 
   ${mobile`
-    margin: 20px 0px;
     font-size: 14px;
-    letter-spacing: 1px;
   `}
 `;
 
 const Button = styled.button`
-  padding: 10px;
-  font-size: 20px;
-  background-color: transparent;
+  padding: 14px 30px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  border: 2px solid black;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: black;
-    color: white;
+    transform: translateY(-3px);
+    background: #000;
   }
+`;
 
-  ${mobile`
-    font-size: 14px;
-    padding: 8px;
-  `}
+const BadgeText = styled.div`
+  display: inline-block;
+  background: #111;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
 `;
 
 const Slider = () => {
@@ -152,10 +176,16 @@ const Slider = () => {
             </ImgContainer>
 
             <InfoContainer>
+              <BadgeText>NEW ARRIVALS</BadgeText>
+
               <Title>{item.title}</Title>
+
               <Desc>{item.desc}</Desc>
-              <Button onClick={() => navigate("/products")}>Shop Now</Button>
-            </InfoContainer>
+
+              <Button onClick={() => navigate("/products")}>
+                SHOP NOW
+              </Button>
+          </InfoContainer>
           </Slide>
         ))}
       </Wrapper>
