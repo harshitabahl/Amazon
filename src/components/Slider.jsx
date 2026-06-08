@@ -51,7 +51,7 @@ const Wrapper = styled.div`
 
 const Slide = styled.div`
   width: 100vw;
-  height: 650px;
+  height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
