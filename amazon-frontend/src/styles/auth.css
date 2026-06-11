@@ -1,0 +1,153 @@
+/* =======================
+   AUTH PAGE CONTAINER
+======================= */
+.auth-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(to bottom right, #f5f7fa, #e4e8f0);
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* =======================
+   AUTH CARD
+======================= */
+.auth-wrapper {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* =======================
+   TITLE
+======================= */
+.auth-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #111;
+  text-align: center;
+}
+
+/* =======================
+   FORM
+======================= */
+.auth-wrapper form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =======================
+   INPUT FIELDS
+======================= */
+.auth-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fafafa;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border-color: #4a90e2;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+
+/* =======================
+   BUTTON
+======================= */
+.auth-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffcc70, #ffb347);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s ease;
+}
+
+.auth-button:hover {
+  transform: translateY(-1px);
+}
+
+.auth-button:active {
+  transform: scale(0.98);
+}
+
+/* =======================
+   ERROR TEXT
+======================= */
+.auth-error {
+  color: #d9534f;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =======================
+   LINK TEXT (LOGIN/SIGNUP SWITCH)
+======================= */
+.auth-link {
+  margin-top: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: #555;
+}
+
+.auth-link span {
+  color: #4a90e2;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-link span:hover {
+  text-decoration: underline;
+}
+
+/* =======================
+   RESPONSIVE DESIGN
+======================= */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .auth-wrapper {
+    padding: 22px;
+    border-radius: 10px;
+  }
+
+  .auth-title {
+    font-size: 22px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .auth-wrapper {
+    padding: 18px;
+  }
+
+  .auth-input {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .auth-button {
+    font-size: 14px;
+  }
+}
