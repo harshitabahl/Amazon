@@ -27,11 +27,19 @@ const Login = ({ setUser }) => {
         { withCredentials: true }
       );
 
-      // 3. set global user state
-      setUser(res.data);
 
-      // 4. redirect home
-      navigate("/");
+
+      // 3. save user in localStorage
+        localStorage.setItem(
+        "user",
+        JSON.stringify(res.data)
+        );
+
+        // 4. update state
+        setUser(res.data);
+
+        // 5. redirect home
+        window.location.href = "/";
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
@@ -69,7 +77,7 @@ const Login = ({ setUser }) => {
                 cursor: "pointer",
                 textDecoration: "underline",
               }}
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
             >
               Sign up
             </span>

@@ -3,6 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 
+//username: harshita123
+// email: harshita1234567@gmail.com
+// password: 123456
+
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
