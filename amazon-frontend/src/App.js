@@ -5,7 +5,6 @@ import axios from "axios";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Navbar from "./components/Navbar";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -15,7 +14,7 @@ function App() {
     const getUser = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/auth/me",
+          "http://localhost:5001/api/auth/me",
           { withCredentials: true }
         );
 
@@ -34,7 +33,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar user={user} setUser={setUser} />
 
       <Routes>
         <Route path="/" element={<Home />} />

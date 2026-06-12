@@ -106,24 +106,27 @@ const MenuItem = styled.div`
   }
 `;
 
+const Navbar = () => {
+  const quantity = 0;
 
-const Navbar = ({ user, setUser }) => {
-  const quantity = 0; // or localStorage cart later
-
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
-    window.location.reload(); // correct way
-};
+    localStorage.removeItem("token");
 
-return (
+    navigate("/");
+
+    window.location.reload();
+  };
+
+  return (
     <Container>
       <Wrapper>
-
         {/* LEFT */}
         <Left>
           <StyledLink to="/">
@@ -143,39 +146,46 @@ return (
 
         {/* RIGHT */}
         <Right>
-
-          {/* IF NOT LOGGED IN */}
           {!currentUser ? (
             <>
               <MenuItem>
-                <StyledLink to="/register" >SIGN IN</StyledLink>
+                <StyledLink to="/login">
+                  SIGN IN
+                </StyledLink>
               </MenuItem>
 
               <MenuItem>
-                <StyledLink to="/login" >LOGIN</StyledLink>
+                <StyledLink to="/signup">
+                  CREATE ACCOUNT
+                </StyledLink>
               </MenuItem>
             </>
           ) : (
-
-              <MenuItem onClick={handleLogout}>
-                        LOGOUT
-              </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              SIGN OUT
+            </MenuItem>
           )}
 
-          {/* CART */}
           <MenuItem>
             <StyledLink to={currentUser ? "/cart" : "/login"}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
                 CART
-                <Badge badgeContent={currentUser ? quantity : 0} color="primary">
+                <Badge
+                  badgeContent={currentUser ? quantity : 0}
+                  color="primary"
+                >
                   <ShoppingCartOutlined />
                 </Badge>
               </div>
             </StyledLink>
           </MenuItem>
-
         </Right>
-
       </Wrapper>
     </Container>
   );
