@@ -3,32 +3,39 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const authRoute = require("./routes/auth");
+require("dotenv").config();
 
+const authRoute = require("./routes/auth");
 const app = express();
 
-// ---------------- MIDDLEWARE ----------------
-app.use(express.json());
-app.use(cookieParser());
-
-// IMPORTANT: CORS for cookies
+// ✅ CORS FIRST
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 
-// ---------------- ROUTES ----------------
+app.get("/", (req, res) => {
+  res.send("Backend working");
+});
+
+
+// ✅ Body + cookies
+app.use(express.json());
+app.use(cookieParser());
+
+// ROUTES
 app.use("/api/auth", authRoute);
 
-// ---------------- DB CONNECT ----------------
+// MongoDB CONNECT (ONLY ONCE)
 mongoose
-  .connect("mongodb://localhost:27017/amazonclone")
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.log("❌ Mongo Error:", err.message));
 
-// ---------------- SERVER ----------------
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+// server
+app.listen(5001, () => {
+  console.log("Server running on port 5001");
 });
