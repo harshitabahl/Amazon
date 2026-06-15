@@ -1,14 +1,24 @@
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+const productRoute = require("./routes/product");
+const authRoute = require("./routes/auth");
+
 require("dotenv").config();
 
-const authRoute = require("./routes/auth");
 const app = express();
 
-// ✅ CORS FIRST
+/* Serve product images */
+app.use(
+  "/product-images",
+  express.static(
+    path.join(__dirname, "public/product-images")
+  )
+);
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -21,21 +31,17 @@ app.get("/", (req, res) => {
   res.send("Backend working");
 });
 
-
-// ✅ Body + cookies
 app.use(express.json());
 app.use(cookieParser());
 
-// ROUTES
 app.use("/api/auth", authRoute);
+app.use("/api/products", productRoute);
 
-// MongoDB CONNECT (ONLY ONCE)
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ Mongo Error:", err.message));
 
-// server
 app.listen(5001, () => {
   console.log("Server running on port 5001");
 });
