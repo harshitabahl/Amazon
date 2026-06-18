@@ -8,14 +8,19 @@ const ProductSchema = new mongoose.Schema(
     },
 
     desc: {
-      type: String,
-      required: true,
+    type: String,
+    default: "",
+  },
+
+    imageBroken: {
+    type: Boolean,
+      default: false,
     },
 
-    img: {
-      type: String,
-      required: true,
-    },
+  img: {
+    type: String,
+    default: "https://via.placeholder.com/300x400?text=Product",
+  },
 
     categories: {
       type: [String],
