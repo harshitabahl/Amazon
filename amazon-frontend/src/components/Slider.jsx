@@ -45,7 +45,10 @@ const Arrow = styled.div`
 const Wrapper = styled.div`
   height: 100%;
   display: flex;
-  transform: translateX(${(props) => props.slideIndex * -100}vw);
+
+  /* FIX: prevent prop leaking */
+  transform: translateX(${({ $index }) => $index * -100}vw);
+
   transition: all 1.5s ease;
 `;
 
@@ -55,7 +58,9 @@ const Slide = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${(props) => props.bg || "white"};
+
+  /* FIX: prevent bg leaking */
+  background-color: ${({ $bg }) => $bg || "white"};
 
   ${mobile`
     flex-direction: column;
@@ -75,7 +80,6 @@ const Image = styled.img`
   width: 100%;
   height: 800px;
   object-fit: contain;
-
 `;
 
 const InfoContainer = styled.div`
@@ -110,29 +114,24 @@ const Desc = styled.p`
 `;
 
 const Button = styled.button`
-  padding: 10px;
-  font-size: 20px;
-  background-color: transparent;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: white;
+  color: black;
   cursor: pointer;
-  border: 2px solid black;
+  border: none;
+  font-weight: bold;
   transition: all 0.3s ease;
 
   &:hover {
     background-color: black;
     color: white;
   }
-
-
-  ${mobile`
-    font-size: 14px;
-    padding: 8px;
-  `}
 `;
 
 const Slider = () => {
   const [slideIndex, setSlideIndex] = useState(0);
   const navigate = useNavigate();
-
 
   const handleClick = (direction) => {
     if (direction === "left") {
@@ -152,9 +151,9 @@ const Slider = () => {
         <ArrowLeftOutlined />
       </Arrow>
 
-      <Wrapper slideIndex={slideIndex}>
+      <Wrapper $index={slideIndex}>
         {sliderItems.map((item) => (
-          <Slide bg={item.bg} key={item.id}>
+          <Slide key={item.id} $bg={item.bg}>
             <ImgContainer>
               <Image src={item.img} />
             </ImgContainer>
