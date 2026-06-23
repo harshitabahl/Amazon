@@ -2,83 +2,63 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Slider from "../components/Slider";
-import ProductCard from "../components/ProductCard";
-import { useNavigate } from "react-router-dom";
+import CategoryRow from "../components/CategoryRow";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
+  const [homeData, setHomeData] = useState({
+    recommended: [],
+    clothing: [],
+    shoes: [],
+    electronics: [],
+    watches: [],
+    bags: [],
+    homeKitchen: [],
+    trending: [],
+  });
+
+  const addFallbackImage = (products = []) => {
+    return products.map((p) => ({
+      ...p,
+      img: p.img || getPlaceholderImage(p.title),
+    }));
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5001/api/products"
-        );
+    axios
+      .get("http://localhost:5001/api/products/home")
+      .then((res) => {
+        console.log("HOME API RESPONSE:", res.data);
 
-        // Show only 5 featured products
-        setProducts((res.data.products || []).slice(0, 5));
-
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchProducts();
+        setHomeData({
+          recommended: addFallbackImage(res.data.recommended || []),
+          clothing: addFallbackImage(res.data.clothing || []),
+          shoes: addFallbackImage(res.data.shoes || []),
+          electronics: addFallbackImage(res.data.electronics || []),
+          watches: addFallbackImage(res.data.watches || []),
+          bags: addFallbackImage(res.data.bags || []),
+          homeKitchen: addFallbackImage(res.data.homeKitchen || []),
+          trending: addFallbackImage(res.data.trending || []),
+        });
+      })
+      .catch((err) => {
+        console.log("HOME API ERROR:", err);
+      });
   }, []);
 
   return (
     <div>
       <Navbar />
+
       <Slider />
 
-      <div
-        style={{
-        padding: "40px 30px",
-        marginTop: "30px",
-        background: "#eaeded",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <h2>Featured Products</h2>
-
-          <button
-            onClick={() => navigate("/products")}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#007185",
-              cursor: "pointer",
-              fontSize: "16px",
-              fontWeight: "bold",
-            }}
-          >
-            View All →
-          </button>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "20px",
-          }}
-        >
-          {products.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-            />
-          ))}
-        </div>
-      </div>
+      <CategoryRow title="Recommended for You" products={homeData.recommended} />
+      <CategoryRow title="Clothing" products={homeData.clothing} />
+      <CategoryRow title="Shoes" products={homeData.shoes} />
+      <CategoryRow title="Electronics" products={homeData.electronics} />
+      <CategoryRow title="Watches" products={homeData.watches} />
+      <CategoryRow title="Accessories" products={homeData.bags} />
+      <CategoryRow title="Home & Kitchen" products={homeData.homeKitchen} />
+      <CategoryRow title="Trending Deals" products={homeData.trending} />
     </div>
   );
 };

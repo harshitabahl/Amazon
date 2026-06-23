@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./productDetail.css";
+import { useNavigate, useParams } from "react-router-dom";
 
 function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
@@ -31,10 +32,17 @@ function ProductDetail() {
     <div className="product-wrapper">
 
       {/* Breadcrumbs */}
-      <div className="breadcrumbs">
-        Home &gt; Fashion &gt;{" "}
-        {product.categories?.[0] || "Clothing"} &gt;{" "}
-        {product.title.slice(0, 30)}...
+      <div
+        className="breadcrumbs"
+        onClick={() => navigate(-1)}
+        style={{
+          cursor: "pointer",
+          color: "#007185",
+          fontWeight: "500",
+          marginBottom: "20px",
+        }}
+      >
+        ← Back to Shopping
       </div>
 
       <div className="product-page">
@@ -64,9 +72,13 @@ function ProductDetail() {
 
           <h1>{product.title}</h1>
 
-          <p className="brand">
-            Brand <span>Amazon Fashion</span>
-          </p>
+         
+         <p className="brand">
+                Brand{" "}
+                <span>
+                  {product.brand?.trim() ? product.brand : "Verified Seller"}
+                </span>
+              </p>
 
           <div className="rating">
             ⭐⭐⭐⭐☆ {rating}
@@ -112,12 +124,12 @@ function ProductDetail() {
           <h3>About this item</h3>
 
           <ul className="features">
-            <li>{product.desc}</li>
-            <li>Regular Fit</li>
-            <li>Premium Cotton Blend</li>
-            <li>Comfortable for Daily Wear</li>
-            <li>Machine Wash</li>
-          </ul>
+          <li>{product.desc || "Premium quality product."}</li>
+          <li>High quality material</li>
+          <li>Best value for money</li>
+          <li>Fast delivery available</li>
+          <li>Easy returns & secure checkout</li>
+        </ul>
 
           <p className="category">
             <strong>Category :</strong>{" "}

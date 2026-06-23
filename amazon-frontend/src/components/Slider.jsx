@@ -1,179 +1,454 @@
 import styled from "styled-components";
-import { ArrowLeftOutlined, ArrowRightOutlined } from "@mui/icons-material";
-import { useState } from "react";
-import { sliderItems } from "../data";
-import { mobile } from "../responsive";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Container = styled.div`
+/* ================= CONTAINER ================= */
+
+export const Container = styled.div`
   width: 100%;
-  height: 800px;
-  display: flex;
+  height: 560px;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, #f7f9fc 0%, #edf2f7 100%);
 
-  ${mobile`
-    height: 400px;
-  `}
-`;
-
-const Arrow = styled.div`
-  width: 50px;
-  height: 50px;
-  background-color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: ${(props) => props.direction === "left" && "10px"};
-  right: ${(props) => props.direction === "right" && "10px"};
-  margin: auto;
-  cursor: pointer;
-  opacity: 0.5;
-  z-index: 1;
-  transition: 0.2s ease;
-
-  &:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
+  @media (max-width: 768px) {
+    height: auto;
   }
 `;
 
-const Wrapper = styled.div`
+/* ================= WRAPPER ================= */
+
+export const Wrapper = styled.div`
+  display: flex;
   height: 100%;
-  display: flex;
-
-  /* FIX: prevent prop leaking */
-  transform: translateX(${({ $index }) => $index * -100}vw);
-
-  transition: all 1.5s ease;
+  transform: translateX(${({ $index }) => $index * -100}%);
+  transition: transform 0.8s ease;
 `;
 
-const Slide = styled.div`
-  width: 100vw;
-  height: 800px;
+/* ================= SLIDE ================= */
+
+export const Slide = styled.div`
+  min-width: 100%;
+  height: 560px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
-  /* FIX: prevent bg leaking */
-  background-color: ${({ $bg }) => $bg || "white"};
+  padding: 50px 90px;
+  box-sizing: border-box;
 
-  ${mobile`
+  @media (max-width: 768px) {
     flex-direction: column;
-    justify-content: center;
-  `}
-`;
-
-const ImgContainer = styled.div`
-  height: 800px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 800px;
-  object-fit: contain;
-`;
-
-const InfoContainer = styled.div`
-  flex: 1;
-  padding: 50px;
-
-  ${mobile`
-    padding: 10px;
-    text-align: center;
-  `}
-`;
-
-const Title = styled.h1`
-  font-size: 70px;
-
-  ${mobile`
-    font-size: 30px;
-  `}
-`;
-
-const Desc = styled.p`
-  margin: 50px 0px;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 3px;
-
-  ${mobile`
-    margin: 20px 0px;
-    font-size: 14px;
-    letter-spacing: 1px;
-  `}
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: white;
-  color: black;
-  cursor: pointer;
-  border: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: black;
-    color: white;
+    height: auto;
+    padding: 40px 20px;
   }
 `;
 
-const Slider = () => {
-  const [slideIndex, setSlideIndex] = useState(0);
+/* ================= IMAGE ================= */
+
+export const ImgContainer = styled.div`
+  flex: 1.15;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+`;
+
+export const Circle = styled.div`
+  width: 430px;
+  height: 430px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #e9edf3
+  );
+
+  position: absolute;
+
+  box-shadow: inset 0 0 50px rgba(255,255,255,.7);
+`;
+
+export const Image = styled.img`
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 520px;
+  max-height: 470px;
+
+  object-fit: contain;
+
+  filter: drop-shadow(0 18px 35px rgba(0,0,0,.18));
+
+  transition: .35s;
+
+  &:hover{
+    transform: scale(1.06);
+  }
+`;
+
+/* ================= CONTENT ================= */
+
+export const Content = styled.div`
+  flex: .95;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  @media(max-width:768px){
+    margin-top:40px;
+    text-align:center;
+  }
+`;
+
+export const Badge = styled.div`
+  width: fit-content;
+
+  padding: 8px 16px;
+
+  background: #CC0C39;
+  color: white;
+
+  border-radius: 6px;
+
+  font-size: 14px;
+  font-weight: 700;
+`;
+
+export const Title = styled.h1`
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #111;
+
+  margin: 0;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+export const Rating = styled.div`
+  color: #FFA41C;
+  font-size: 19px;
+  font-weight: 600;
+`;
+
+export const Desc = styled.p`
+  font-size: 18px;
+  line-height: 1.8;
+  color: #555;
+
+  max-width: 540px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+`;
+
+export const FeatureRow = styled.div`
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+
+  color:#007600;
+
+  font-size:15px;
+  font-weight:600;
+`;
+
+export const PriceRow = styled.div`
+  display:flex;
+  align-items:flex-end;
+  gap:16px;
+`;
+
+export const Price = styled.h2`
+  font-size:56px;
+  color:#B12704;
+  margin:0;
+`;
+
+export const OldPrice = styled.span`
+  font-size:24px;
+  color:#777;
+  text-decoration:line-through;
+`;
+
+export const Discount = styled.span`
+  color:#007600;
+  font-size:22px;
+  font-weight:700;
+`;
+
+export const ButtonRow = styled.div`
+  display:flex;
+  gap:18px;
+
+  margin-top:10px;
+
+  @media(max-width:768px){
+    justify-content:center;
+  }
+`;
+
+export const CartButton = styled.button`
+  padding:15px 34px;
+
+  border:none;
+  border-radius:999px;
+
+  background:#FFD814;
+
+  font-size:17px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  &:hover{
+    background:#F7CA00;
+    transform:translateY(-2px);
+  }
+`;
+
+export const BuyButton = styled.button`
+  padding:15px 34px;
+
+  border:none;
+  border-radius:999px;
+
+  background:#FA8900;
+
+  color:white;
+
+  font-size:17px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  &:hover{
+    background:#E47911;
+    transform:translateY(-2px);
+  }
+`;
+
+/* ================= ARROWS ================= */
+
+export const Arrow = styled.div`
+  width:60px;
+  height:60px;
+
+  border-radius:50%;
+
+  background:white;
+
+  position:absolute;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  font-size:30px;
+
+  cursor:pointer;
+
+  z-index:20;
+
+  box-shadow:0 8px 25px rgba(0,0,0,.15);
+
+  left:${props=>props.left && "25px"};
+  right:${props=>props.right && "25px"};
+
+  transition:.25s;
+
+  &:hover{
+    background:#FFD814;
+    transform:translateY(-50%) scale(1.08);
+  }
+`;
+
+export default function Slider() {
+  const [slides, setSlides] = useState([]);
+  const [index, setIndex] = useState(0);
   const navigate = useNavigate();
 
-  const handleClick = (direction) => {
-    if (direction === "left") {
-      setSlideIndex(
-        slideIndex > 0 ? slideIndex - 1 : sliderItems.length - 1
-      );
-    } else {
-      setSlideIndex(
-        slideIndex < sliderItems.length - 1 ? slideIndex + 1 : 0
-      );
-    }
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const fetchHero = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5001/api/products/hero"
+        );
+
+        setSlides(res.data.slice(0, 5));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchHero();
+  }, []);
+
+  const stopAuto = () => {
+    clearInterval(intervalRef.current);
   };
 
+  const startAuto = () => {
+    if (slides.length <= 1) return;
+
+    stopAuto();
+
+    intervalRef.current = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, 4000);
+  };
+
+  useEffect(() => {
+    startAuto();
+
+    return () => stopAuto();
+  }, [slides]);
+
+  const next = () => {
+    stopAuto();
+
+    setIndex((prev) => (prev + 1) % slides.length);
+
+    setTimeout(startAuto, 200);
+  };
+
+  const prev = () => {
+    stopAuto();
+
+    setIndex((prev) =>
+      prev === 0 ? slides.length - 1 : prev - 1
+    );
+
+    setTimeout(startAuto, 200);
+  };
+
+  if (!slides.length) {
+    return (
+      <Container>
+        <div
+          style={{
+            margin: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+          }}
+        >
+          Loading...
+        </div>
+      </Container>
+    );
+  }
+
   return (
-    <Container>
-      <Arrow direction="left" onClick={() => handleClick("left")}>
-        <ArrowLeftOutlined />
+    <Container
+      onMouseEnter={stopAuto}
+      onMouseLeave={startAuto}
+    >
+      <Arrow left onClick={prev}>
+        ❮
       </Arrow>
 
-      <Wrapper $index={slideIndex}>
-        {sliderItems.map((item) => (
-          <Slide key={item.id} $bg={item.bg}>
+      <Wrapper $index={index}>
+        {slides.map((item) => (
+          <Slide key={item._id}>
+            {/* LEFT SIDE IMAGE */}
+
             <ImgContainer>
-              <Image src={item.img} />
+              <Circle />
+              <Image
+                src={item.img}
+                alt={item.title}
+                onClick={() => navigate(`/product/${item._id}`)}
+                style={{ cursor: "pointer" }}
+              />
             </ImgContainer>
 
-            <InfoContainer>
-              <Title>{item.title}</Title>
+            {/* RIGHT SIDE CONTENT */}
+
+            <Content>
+              <Badge>Limited Time Deal</Badge>
+
+              <Title
+                onClick={() => navigate(`/product/${item._id}`)}
+                style={{ cursor: "pointer" }}
+              >
+                {item.title}
+              </Title>
+
+              <Rating>
+                ⭐⭐⭐⭐⭐{" "}
+                <span
+                  style={{
+                    color: "#007185",
+                  }}
+                >
+                  4.5 (128 Reviews)
+                </span>
+              </Rating>
+
+              <PriceRow>
+                <Price>₹{item.price}</Price>
+
+                <OldPrice>₹999</OldPrice>
+
+                <Discount>60% OFF</Discount>
+              </PriceRow>
+
               <Desc>{item.desc}</Desc>
-              <Button onClick={() => navigate("/")}>
-                Shop Now
-              </Button>
-            </InfoContainer>
+
+              <FeatureRow>
+                <span>✓ Free Delivery</span>
+
+                <span>✓ Easy Returns</span>
+
+                <span>✓ Cash on Delivery</span>
+              </FeatureRow>
+
+              <ButtonRow>
+                  <CartButton
+                    onClick={() => alert("Cart functionality coming soon!")}
+                  >
+                    Add to Cart
+                  </CartButton>
+
+                  <BuyButton
+                    onClick={() => navigate(`/product/${item._id}`)}
+                  >
+                    View Details
+                  </BuyButton>
+              </ButtonRow>
+            </Content>
           </Slide>
         ))}
       </Wrapper>
 
-      <Arrow direction="right" onClick={() => handleClick("right")}>
-        <ArrowRightOutlined />
+      <Arrow right onClick={next}>
+        ❯
       </Arrow>
     </Container>
   );
-};
-
-export default Slider;
+}
