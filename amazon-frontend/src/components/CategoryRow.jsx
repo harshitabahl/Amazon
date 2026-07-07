@@ -27,68 +27,65 @@ const Track = styled.div`
   display: flex;
   gap: 18px;
   transition: transform 0.45s ease;
-  transform: translateX(
-    calc(${({ $index, $cardWidth }) => -$index * $cardWidth}% - ${({ $index }) =>
-            $index * 18}px)
-  );
+  transform: translateX(calc(-${({ $index }) => $index * 100}%));
 `;
 
 const Card = styled.div`
-  flex: 0 0 ${({ $cardWidth }) => $cardWidth}%;
+  flex: 0 0 calc(${({ $cardWidth }) => $cardWidth}% - 14px);
   background: white;
   border-radius: 12px;
   padding: 16px;
   box-sizing: border-box;
-  box-shadow: 0 2px 10px rgba(0,0,0,.08);
-  transition: .25s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: 0.25s;
 
-  &:hover{
+  &:hover {
     transform: translateY(-5px);
-    box-shadow:0 8px 20px rgba(0,0,0,.18);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   }
 `;
 
 const Img = styled.img`
-  width:100%;
-  height:220px;
-  object-fit:contain;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
 `;
 
 const Name = styled.p`
-  font-size:14px;
-  font-weight:500;
-  margin:14px 0 8px;
-  height:42px;
-  overflow:hidden;
-  color:#222;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 14px 0 8px;
+  height: 42px;
+  overflow: hidden;
+  color: #222;
 `;
 
 const Price = styled.h3`
-  color:#B12704;
-  margin:0;
+  color: #b12704;
+  margin: 0;
 `;
 
 const Arrow = styled.div`
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  background:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:24px;
-  cursor:pointer;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
-  z-index:10;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 
-  left:${props=>props.left && "10px"};
-  right:${props=>props.right && "10px"};
+  left: ${(props) => props.left && "10px"};
+  right: ${(props) => props.right && "10px"};
 
-  &:hover{
-    transform:translateY(-50%) scale(1.08);
+  &:hover {
+    transform: translateY(-50%) scale(1.08);
   }
 `;
 
@@ -100,18 +97,13 @@ const CategoryRow = ({ title, products = [] }) => {
 
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth <= 768) {
-        setVisibleItems(2);
-      } else if (window.innerWidth <= 992) {
-        setVisibleItems(3);
-      } else {
-        setVisibleItems(4);
-      }
+      if (window.innerWidth <= 768) setVisibleItems(2);
+      else if (window.innerWidth <= 992) setVisibleItems(3);
+      else setVisibleItems(4);
     };
 
     update();
     window.addEventListener("resize", update);
-
     return () => window.removeEventListener("resize", update);
   }, []);
 
@@ -119,11 +111,11 @@ const CategoryRow = ({ title, products = [] }) => {
   const maxIndex = Math.max(0, items.length - visibleItems);
 
   const move = (dir) => {
-    if (dir === "left") {
-      setIndex((prev) => Math.max(prev - 1, 0));
-    } else {
-      setIndex((prev) => Math.min(prev + 1, maxIndex));
-    }
+    setIndex((prev) =>
+      dir === "left"
+        ? Math.max(prev - 1, 0)
+        : Math.min(prev + 1, maxIndex)
+    );
   };
 
   return (
@@ -138,16 +130,13 @@ const CategoryRow = ({ title, products = [] }) => {
         )}
 
         <Window>
-          <Track
-            $index={index}
-            $cardWidth={cardWidth}
-          >
+          <Track $index={index}>
             {items.map((item) => (
-              <Card
-                key={item._id}
-                $cardWidth={cardWidth}
-              >
-                <Img src={item.img} alt={item.title} />
+              <Card key={item._id} $cardWidth={cardWidth}>
+                <Img
+                  src={item.img || "/placeholder.png"}
+                  alt={item.title}
+                />
 
                 <Name>
                   {item.title?.length > 55
@@ -155,7 +144,7 @@ const CategoryRow = ({ title, products = [] }) => {
                     : item.title}
                 </Name>
 
-                <Price>₹{item.price}</Price>
+                <Price>₹{item.price?.toLocaleString("en-IN")}</Price>
               </Card>
             ))}
           </Track>

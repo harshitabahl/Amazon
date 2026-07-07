@@ -2,9 +2,10 @@ import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {useCallback} from "react"
+
 
 /* ================= CONTAINER ================= */
-
 export const Container = styled.div`
   width: 100%;
   height: 560px;
@@ -12,8 +13,13 @@ export const Container = styled.div`
   overflow: hidden;
   background: linear-gradient(135deg, #f7f9fc 0%, #edf2f7 100%);
 
+  @media (max-width: 1024px) {
+    height: 520px;
+  }
+
   @media (max-width: 768px) {
     height: auto;
+    padding: 20px 0;
   }
 `;
 
@@ -39,10 +45,15 @@ export const Slide = styled.div`
   padding: 50px 90px;
   box-sizing: border-box;
 
+  @media (max-width: 1024px) {
+    padding: 40px 40px;
+  }
+
   @media (max-width: 768px) {
     flex-direction: column;
     height: auto;
-    padding: 40px 20px;
+    padding: 30px 20px;
+    gap: 30px;
   }
 `;
 
@@ -63,16 +74,19 @@ export const Circle = styled.div`
   height: 430px;
 
   border-radius: 50%;
-
-  background: linear-gradient(
-    135deg,
-    #ffffff,
-    #e9edf3
-  );
-
+  background: linear-gradient(135deg, #ffffff, #e9edf3);
   position: absolute;
-
   box-shadow: inset 0 0 50px rgba(255,255,255,.7);
+
+  @media (max-width: 1024px) {
+    width: 350px;
+    height: 350px;
+  }
+
+  @media (max-width: 768px) {
+    width: 260px;
+    height: 260px;
+  }
 `;
 
 export const Image = styled.img`
@@ -86,27 +100,33 @@ export const Image = styled.img`
   object-fit: contain;
 
   filter: drop-shadow(0 18px 35px rgba(0,0,0,.18));
-
   transition: .35s;
 
-  &:hover{
+  @media (max-width: 768px) {
+    max-width: 300px;
+    max-height: 260px;
+  }
+
+  &:hover {
     transform: scale(1.06);
   }
 `;
 
-/* ================= CONTENT ================= */
-
 export const Content = styled.div`
   flex: .95;
-
   display: flex;
   flex-direction: column;
-
   gap: 18px;
 
-  @media(max-width:768px){
-    margin-top:40px;
-    text-align:center;
+  @media (max-width: 1024px) {
+    gap: 14px;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 0;
+    text-align: center;
+    align-items: center;
+    gap: 12px;
   }
 `;
 
@@ -129,13 +149,15 @@ export const Title = styled.h1`
   font-weight: 800;
   line-height: 1.15;
   color: #111;
-
   margin: 0;
 
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 
 export const Rating = styled.div`
@@ -176,9 +198,17 @@ export const PriceRow = styled.div`
 `;
 
 export const Price = styled.h2`
-  font-size:56px;
-  color:#B12704;
-  margin:0;
+  font-size: 56px;
+  color: #B12704;
+  margin: 0;
+
+  @media (max-width: 1024px) {
+    font-size: 42px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 
 export const OldPrice = styled.span`
@@ -194,95 +224,84 @@ export const Discount = styled.span`
 `;
 
 export const ButtonRow = styled.div`
-  display:flex;
-  gap:18px;
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
 
-  margin-top:10px;
-
-  @media(max-width:768px){
-    justify-content:center;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
   }
 `;
 
 export const CartButton = styled.button`
-  padding:15px 34px;
+  padding: 15px 34px;
+  border: none;
+  border-radius: 999px;
+  background: #FFD814;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .25s;
 
-  border:none;
-  border-radius:999px;
-
-  background:#FFD814;
-
-  font-size:17px;
-  font-weight:700;
-
-  cursor:pointer;
-
-  transition:.25s;
-
-  &:hover{
-    background:#F7CA00;
-    transform:translateY(-2px);
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
 export const BuyButton = styled.button`
-  padding:15px 34px;
+  padding: 15px 34px;
+  border: none;
+  border-radius: 999px;
+  background: #FA8900;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .25s;
 
-  border:none;
-  border-radius:999px;
-
-  background:#FA8900;
-
-  color:white;
-
-  font-size:17px;
-  font-weight:700;
-
-  cursor:pointer;
-
-  transition:.25s;
-
-  &:hover{
-    background:#E47911;
-    transform:translateY(-2px);
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
 /* ================= ARROWS ================= */
 
 export const Arrow = styled.div`
-  width:60px;
-  height:60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white;
 
-  border-radius:50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 
-  background:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  position:absolute;
-  top:50%;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 20;
 
-  transform:translateY(-50%);
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
 
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  left: ${props => props.left && "25px"};
+  right: ${props => props.right && "25px"};
 
-  font-size:30px;
+  transition: .25s;
 
-  cursor:pointer;
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
 
-  z-index:20;
-
-  box-shadow:0 8px 25px rgba(0,0,0,.15);
-
-  left:${props=>props.left && "25px"};
-  right:${props=>props.right && "25px"};
-
-  transition:.25s;
-
-  &:hover{
-    background:#FFD814;
-    transform:translateY(-50%) scale(1.08);
+  &:hover {
+    background: #FFD814;
+    transform: translateY(-50%) scale(1.08);
   }
 `;
 
@@ -309,25 +328,26 @@ export default function Slider() {
     fetchHero();
   }, []);
 
-  const stopAuto = () => {
-    clearInterval(intervalRef.current);
-  };
+  
 
-  const startAuto = () => {
+  const stopAuto = useCallback(() => {
+    clearInterval(intervalRef.current);
+  }, []);
+
+  const startAuto = useCallback(() => {
     if (slides.length <= 1) return;
 
-    stopAuto();
+    clearInterval(intervalRef.current);
 
     intervalRef.current = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
     }, 4000);
-  };
+  }, [slides.length]);
 
   useEffect(() => {
-    startAuto();
-
-    return () => stopAuto();
-  }, [slides]);
+  startAuto();
+  return () => clearInterval(intervalRef.current);
+}, [startAuto]);
 
   const next = () => {
     stopAuto();

@@ -3,6 +3,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Slider from "../components/Slider";
 import CategoryRow from "../components/CategoryRow";
+import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
 const Home = () => {
   const [homeData, setHomeData] = useState({

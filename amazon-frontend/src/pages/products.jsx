@@ -1,87 +1,155 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
+
 import "./products.css";
+
 import ProductCard from "../components/ProductCard";
+import FilterSidebar from "../components/FilterSlidebar";
+import SortBar from "../components/SortBar";
+import Pagination from "../components/Pagination";
+import SkeletonCard from "../components/SkeletonCard";
 
 function Products() {
-  const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
+  const [searchParams] = useSearchParams();
 
-  const [search, setSearch] = useState("");
+  const search = searchParams.get("search") || "";
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
+  const [filters, setFilters] = useState({
+    category: "",
+    brands: [],
+    minPrice: "",
+    maxPrice: "",
+    sort: "featured",
+  });
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   useEffect(() => {
     fetchProducts();
-  }, [page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, filters, search]);
 
-  const fetchProducts = async () => {
+  async function fetchProducts() {
     try {
+      setLoading(true);
+
       const res = await axios.get(
-        `http://localhost:5001/api/products?page=${page}&limit=20`
+        "http://localhost:5001/api/products",
+        {
+          params: {
+            page,
+            limit: 24,
+            search,
+            category: filters.category,
+            brands: filters.brands.join(","),
+            minPrice: filters.minPrice,
+            maxPrice: filters.maxPrice,
+            sort: filters.sort,
+          },
+        }
       );
 
-      setProducts(res.data.products);
-      setFiltered(res.data.products);
-      setPages(res.data.pages);
+      setProducts(res.data.products || []);
+      setPages(res.data.pages || 1);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleSearch = (text) => {
-    setSearch(text);
-
-    const data = products.filter((p) =>
-      p.title.toLowerCase().includes(text.toLowerCase())
-    );
-
-    setFiltered(data);
-  };
+  }
 
   return (
-    <div className="container">
+    <div className="products-page">
 
-      <div className="header">
-        <h2>All Products</h2>
+      <FilterSidebar
+        products={products}
+        filters={filters}
+        setFilters={setFilters}
+      />
 
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
+      <main className="products-content">
+
+        <SortBar
+          total={products.length}
+          search={search}
+          filters={filters}
+          setFilters={setFilters}
         />
-      </div>
 
-      <div className="grid">
-        {filtered.map((product) => (
-          <ProductCard
-            key={product._id}
-            product={product}
-          />
-        ))}
-      </div>
-      {/* PAGINATION */}
-        <div className="pagination">
-            <button
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-            >
-                Previous
-            </button>
+        {loading ? (
 
-            <span>
-                Page {page} of {pages}
-            </span>
-
-            <button
-                disabled={page === pages}
-                onClick={() => setPage(page + 1)}
-            >
-                Next
-            </button>
+          <section className="products-grid">
+            <div className="grid">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
             </div>
+          </section>
+
+        ) : products.length === 0 ? (
+
+          <div className="empty-state">
+
+            <h2>No matching products found</h2>
+
+            <p>
+              Try changing your search or removing some filters.
+            </p>
+
+            <button
+              className="add-cart-btn"
+              style={{
+                width: "220px",
+                marginTop: "20px",
+              }}
+              onClick={() =>
+                setFilters({
+                    brands: [],
+                    minPrice: "",
+                    maxPrice: "",
+                    sort: "featured",
+                  })
+              }
+            >
+              Clear Filters
+            </button>
+
+          </div>
+
+        ) : (
+
+          <section className="products-grid">
+
+            <div className="grid">
+              {products.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                />
+              ))}
+            </div>
+
+          </section>
+
+        )}
+
+        <Pagination
+          page={page}
+          pages={pages}
+          setPage={setPage}
+        />
+
+      </main>
+
     </div>
   );
 }

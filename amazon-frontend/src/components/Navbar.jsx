@@ -4,6 +4,7 @@ import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import { Badge } from "@mui/material";
 import { mobile } from "../responsive";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -42,6 +43,10 @@ const Center = styled.div`
   flex: 2;
   display: flex;
   justify-content: center;
+
+  ${mobile`
+    flex: 1;
+  `}
 `;
 
 const Right = styled.div`
@@ -52,6 +57,7 @@ const Right = styled.div`
 
   ${mobile`
     flex: 1;
+    justify-content: flex-end;
   `}
 `;
 
@@ -70,6 +76,10 @@ const SearchContainer = styled.div`
   border-radius: 6px;
   display: flex;
   align-items: center;
+
+  ${mobile`
+    max-width: 100%;
+  `}
 `;
 
 const Input = styled.input`
@@ -78,6 +88,11 @@ const Input = styled.input`
   outline: none;
   padding: 14px 16px;
   font-size: 16px;
+
+  ${mobile`
+    padding: 10px;
+    font-size: 14px;
+  `}
 `;
 
 const SearchButton = styled.div`
@@ -89,6 +104,11 @@ const SearchButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  ${mobile`
+    width: 45px;
+    height: 40px;
+  `}
 `;
 
 const MenuItem = styled.div`
@@ -104,16 +124,34 @@ const MenuItem = styled.div`
     text-decoration: underline;
     color: #111;
   }
+
+  ${mobile`
+    margin-left: 10px;
+    font-size: 12px;
+  `}
 `;
+const HideOnMobile = styled.div`
+  ${mobile`
+    display: none;
+  `}
+`;
+
 
 const Navbar = () => {
   const quantity = 0;
+  const [search, setSearch] = useState("");
 
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
   );
 
   const navigate = useNavigate();
+
+  const handleSearch = () => {
+  if (!search.trim()) return;
+
+  navigate(`/products?search=${encodeURIComponent(search.trim())}`);
+};
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -137,15 +175,24 @@ const Navbar = () => {
         {/* CENTER */}
         <Center>
           <SearchContainer>
-            <Input placeholder="Search Products" />
-            <SearchButton>
+            <Input
+              placeholder="Search Products"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+            />
+            <SearchButton onClick={handleSearch}>
               <SearchIcon />
             </SearchButton>
           </SearchContainer>
         </Center>
 
         {/* RIGHT */}
-        <Right>
+          <Right>
           {!currentUser ? (
             <>
               <MenuItem>
@@ -154,11 +201,13 @@ const Navbar = () => {
                 </StyledLink>
               </MenuItem>
 
-              <MenuItem>
-                <StyledLink to="/signup">
-                  CREATE ACCOUNT
-                </StyledLink>
-              </MenuItem>
+              <HideOnMobile>
+                <MenuItem>
+                  <StyledLink to="/signup">
+                    CREATE ACCOUNT
+                  </StyledLink>
+                </MenuItem>
+              </HideOnMobile>
             </>
           ) : (
             <MenuItem onClick={handleLogout}>
