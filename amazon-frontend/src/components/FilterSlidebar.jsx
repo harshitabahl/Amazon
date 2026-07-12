@@ -1,9 +1,10 @@
-function FilterSidebar({ products, filters, setFilters }) {
-  const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))];
-
-  const categories = [
-    ...new Set(products.flatMap((p) => p.categories || [])),
-  ];
+function FilterSidebar({
+  filterData,
+  filters,
+  setFilters,
+}) {
+  const brands = filterData.brands || [];
+  const categories = filterData.categories || [];
 
   const toggleBrand = (brand) => {
     if (filters.brands.includes(brand)) {
@@ -27,15 +28,17 @@ function FilterSidebar({ products, filters, setFilters }) {
     });
   };
 
-  const clearFilters = () => {
-    setFilters({
-      category: "",
-      brands: [],
-      minPrice: "",
-      maxPrice: "",
-      sort: "featured",
-    });
-  };
+    const clearFilters = () => {
+        setFilters({
+            category: "",
+            brands: [],
+            minPrice: "",
+            maxPrice: "",
+            rating: "",
+            sort: "featured",
+            discount: "",
+        });
+    };
 
   return (
     <aside className="filters">
@@ -56,20 +59,25 @@ function FilterSidebar({ products, filters, setFilters }) {
         <h3>Category</h3>
 
         {categories.map((cat) => (
-          <label key={cat} className="filter-item">
+          <label
+            key={cat.name}
+            className="filter-item"
+          >
             <input
               type="radio"
               name="category"
-              checked={filters.category === cat}
+              checked={filters.category === cat.name}
               onChange={() =>
                 setFilters({
                   ...filters,
-                  category: cat,
+                  category: cat.name,
                 })
               }
             />
 
-            <span>{cat}</span>
+            <span>
+              {cat.name}
+            </span>
           </label>
         ))}
       </div>
@@ -81,20 +89,18 @@ function FilterSidebar({ products, filters, setFilters }) {
 
         {brands.map((brand) => (
           <label
-            key={brand}
+            key={brand.name}
             className="filter-item"
           >
             <input
               type="checkbox"
-              checked={filters.brands.includes(
-                brand
-              )}
-              onChange={() =>
-                toggleBrand(brand)
-              }
+              checked={filters.brands.includes(brand.name)}
+              onChange={() => toggleBrand(brand.name)}
             />
 
-            <span>{brand}</span>
+            <span>
+              {brand.name}
+            </span>
           </label>
         ))}
       </div>
@@ -127,6 +133,152 @@ function FilterSidebar({ products, filters, setFilters }) {
           Clear Price
         </button>
       </div>
+
+
+      {/* CUSTOMER RATING */}
+
+            <div className="filter-section">
+            <h3>Customer Rating</h3>
+
+            <label className="filter-item">
+                <input
+                type="radio"
+                name="rating"
+                checked={filters.rating === "4"}
+                onChange={() =>
+                    setFilters({
+                    ...filters,
+                    rating: "4",
+                    })
+                }
+                />
+                <span>4★ & above</span>
+            </label>
+
+            <label className="filter-item">
+                <input
+                type="radio"
+                name="rating"
+                checked={filters.rating === "3"}
+                onChange={() =>
+                    setFilters({
+                    ...filters,
+                    rating: "3",
+                    })
+                }
+                />
+                <span>3★ & above</span>
+            </label>
+
+            <button
+                className="clear-btn"
+                onClick={() =>
+                setFilters({
+                    ...filters,
+                    rating: "",
+                })
+                }
+            >
+                Clear Rating
+            </button>
+            </div>
+
+            {/* DISCOUNT */}
+
+        <div className="filter-section">
+        <h3>Discount</h3>
+
+        <label className="filter-item">
+            <input
+            type="radio"
+            name="discount"
+            checked={filters.discount === "10"}
+            onChange={() =>
+                setFilters({
+                ...filters,
+                discount: "10",
+                })
+            }
+            />
+            <span>10% Off or more</span>
+        </label>
+
+        <label className="filter-item">
+            <input
+            type="radio"
+            name="discount"
+            checked={filters.discount === "25"}
+            onChange={() =>
+                setFilters({
+                ...filters,
+                discount: "25",
+                })
+            }
+            />
+            <span>25% Off or more</span>
+        </label>
+
+        <label className="filter-item">
+            <input
+            type="radio"
+            name="discount"
+            checked={filters.discount === "50"}
+            onChange={() =>
+                setFilters({
+                ...filters,
+                discount: "50",
+                })
+            }
+            />
+            <span>50% Off or more</span>
+        </label>
+
+        <button
+            className="clear-btn"
+            onClick={() =>
+            setFilters({
+                ...filters,
+                discount: "",
+            })
+            }
+        >
+            Clear Discount
+        </button>
+        </div>
+
+        {/* AVAILABILITY */}
+
+        <div className="filter-section">
+        <h3>Availability</h3>
+
+        <label className="filter-item">
+            <input
+            type="checkbox"
+            checked={filters.inStock === "true"}
+            onChange={(e) =>
+                setFilters({
+                ...filters,
+                inStock: e.target.checked ? "true" : "",
+                })
+            }
+            />
+            <span>In Stock</span>
+        </label>
+
+        <label className="filter-item">
+            <input
+            type="checkbox"
+            checked={filters.inStock === "false"}
+            onChange={(e) =>
+                setFilters({
+                ...filters,
+                inStock: e.target.checked ? "false" : "",
+                })
+            }
+            />
+            <span>Out of Stock</span>
+        </label>
+        </div>
     </aside>
   );
 }

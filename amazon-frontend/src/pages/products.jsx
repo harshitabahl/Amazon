@@ -18,6 +18,11 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [filterData, setFilterData] = useState({
+    categories: [],
+    brands: [],
+  });
+
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
@@ -26,6 +31,9 @@ function Products() {
     brands: [],
     minPrice: "",
     maxPrice: "",
+    rating: "",
+    discount: "",
+    inStock: "",
     sort: "featured",
   });
 
@@ -33,10 +41,54 @@ function Products() {
     setPage(1);
   }, [search]);
 
+  // Reload filter options whenever search/category/price changes
+  useEffect(() => {
+    fetchFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    search,
+    filters.category,
+    filters.minPrice,
+    filters.maxPrice,
+  ]);
+
+  // Reload products whenever filters/page/search changes
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filters, search]);
+
+  async function fetchFilters() {
+    try {
+      const res = await axios.get(
+        "http://localhost:5001/api/filters",
+        {
+          params: {
+            page,
+            limit: 24,
+            search,
+            category: filters.category,
+            brands: filters.brands.join(","),
+            minPrice: filters.minPrice,
+            maxPrice: filters.maxPrice,
+            rating: filters.rating,
+            discount: filters.discount,
+            inStock: filters.inStock,
+            sort: filters.sort,
+          }
+        }
+      );
+
+      setFilterData(
+        res.data.filters || {
+          categories: [],
+          brands: [],
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function fetchProducts() {
     try {
@@ -53,6 +105,8 @@ function Products() {
             brands: filters.brands.join(","),
             minPrice: filters.minPrice,
             maxPrice: filters.maxPrice,
+            rating: filters.rating,
+            inStock: filters.inStock,
             sort: filters.sort,
           },
         }
@@ -69,15 +123,13 @@ function Products() {
 
   return (
     <div className="products-page">
-
       <FilterSidebar
-        products={products}
+        filterData={filterData}
         filters={filters}
         setFilters={setFilters}
       />
 
       <main className="products-content">
-
         <SortBar
           total={products.length}
           search={search}
@@ -86,7 +138,6 @@ function Products() {
         />
 
         {loading ? (
-
           <section className="products-grid">
             <div className="grid">
               {Array.from({ length: 12 }).map((_, index) => (
@@ -94,11 +145,8 @@ function Products() {
               ))}
             </div>
           </section>
-
         ) : products.length === 0 ? (
-
           <div className="empty-state">
-
             <h2>No matching products found</h2>
 
             <p>
@@ -113,22 +161,21 @@ function Products() {
               }}
               onClick={() =>
                 setFilters({
-                    brands: [],
-                    minPrice: "",
-                    maxPrice: "",
-                    sort: "featured",
-                  })
+                  category: "",
+                  brands: [],
+                  minPrice: "",
+                  maxPrice: "",
+                  rating: "",
+                  inStock: "",
+                  sort: "featured",
+                })
               }
             >
               Clear Filters
             </button>
-
           </div>
-
         ) : (
-
           <section className="products-grid">
-
             <div className="grid">
               {products.map((product) => (
                 <ProductCard
@@ -137,9 +184,7 @@ function Products() {
                 />
               ))}
             </div>
-
           </section>
-
         )}
 
         <Pagination
@@ -147,9 +192,7 @@ function Products() {
           pages={pages}
           setPage={setPage}
         />
-
       </main>
-
     </div>
   );
 }
