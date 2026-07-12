@@ -3,9 +3,10 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-
 const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
+const filterRoute = require("./routes/filter");
+
 
 require("dotenv").config();
 
@@ -36,6 +37,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
+app.use("/api/filters", filterRoute);
 
 mongoose
   .connect(process.env.MONGO_URI)

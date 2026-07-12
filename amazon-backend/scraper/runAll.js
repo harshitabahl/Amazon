@@ -62,11 +62,14 @@ function getCategory(title = "") {
         desc: p.title,
 
         img:
-          p.image && p.image.startsWith("http")
-            ? p.image
-            : "https://via.placeholder.com/400x500?text=No+Image",
+        p.image && p.image.startsWith("http")
+          ? p.image
+          : "https://via.placeholder.com/400x500?text=No+Image",
 
-        imageBroken: false,
+      // ⭐ NEW
+      productUrl: p.url || "",
+
+      imageBroken: false,
 
         categories: [getCategory(p.title)],
 
@@ -88,33 +91,32 @@ function getCategory(title = "") {
 
     console.log(`📦 Clean Products: ${clean.length}`);
 
-    let inserted = 0;
-    let skipped = 0;
+        let updated = 0;
+        let notFound = 0;
 
-    for (const product of clean) {
-      const result = await Product.updateOne(
-        {
-          title: product.title,
-          price: product.price,
-        },
-        {
-          $setOnInsert: product,
-        },
-        {
-          upsert: true,
-        }
-      );
+        for (const product of clean) {
+          const result = await Product.updateOne(
+            {
+              title: product.title,
+              price: product.price,
+            },
+            {
+              $set: {
+                productUrl: product.productUrl,
+              },
+            }
+          );
 
-      if (result.upsertedCount > 0) {
-        inserted++;
-      } else {
-        skipped++;
+          if (result.matchedCount > 0) {
+            updated++;
+          } else {
+            notFound++;
+          }
       }
-    }
 
     console.log("\n==============================");
-    console.log(`✅ Inserted : ${inserted}`);
-    console.log(`⏭️ Skipped : ${skipped}`);
+    console.log(`✅ Updated : ${updated}`);
+    console.log(`⚠️ Not Updated : ${notFound}`);
     console.log("==============================");
 
     await mongoose.disconnect();

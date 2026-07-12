@@ -204,6 +204,7 @@ router.get("/", async (req, res) => {
       minPrice,
       maxPrice,
       rating,
+      discount,
       inStock,
       sort = "featured",
     } = req.query;
@@ -218,11 +219,16 @@ router.get("/", async (req, res) => {
       };
     }
 
+      // Category
+      console.log("Category from frontend:", category);
+
+      if (category) {
+        filter.categories = category;
+      }
+
+      console.log("Final filter:", filter);
+
     // Category
-    if (category) {
-      filter.category = category;
-      // If your schema uses "categories" instead, tell me and I'll change this.
-    }
 
     // Brand
     if (brands) {
@@ -242,18 +248,20 @@ router.get("/", async (req, res) => {
         filter.price.$lte = Number(maxPrice);
     }
 
-    // Rating (only if rating exists in schema)
-    if (rating) {
-      filter.rating = {
-        $gte: Number(rating),
+        // Discount
+    if (discount === "true") {
+      filter.$expr = {
+        $gt: ["$discountedPrice", 0],
       };
     }
 
     // Stock (only if stock exists in schema)
     if (inStock === "true") {
-      filter.stock = {
-        $gt: 0,
-      };
+      filter.inStock = true;
+    }
+
+    if (inStock === "false") {
+      filter.inStock = false;
     }
 
     let sortOption = {};
@@ -283,12 +291,25 @@ router.get("/", async (req, res) => {
         sortOption = {};
     }
 
-    const total = await Product.countDocuments(filter);
+    let products = await Product.find(filter).sort(sortOption);
 
-    const products = await Product.find(filter)
-      .sort(sortOption)
-      .skip((page - 1) * Number(limit))
-      .limit(Number(limit));
+    // Apply fake rating filter
+    if (rating) {
+      products = products.filter((product) => {
+        const productRating =
+          4 + ((Number(product.price) || 299) % 10) / 10;
+
+        return productRating >= Number(rating);
+      });
+    }
+
+    const total = products.length;
+
+    // Pagination after filtering
+    products = products.slice(
+      (page - 1) * Number(limit),
+      page * Number(limit)
+    );
 
     res.json({
       products,

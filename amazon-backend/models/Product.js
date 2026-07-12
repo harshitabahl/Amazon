@@ -5,22 +5,34 @@ const ProductSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     desc: {
-    type: String,
-    default: "",
-  },
+      type: String,
+      default: "",
+    },
 
     imageBroken: {
-    type: Boolean,
+      type: Boolean,
       default: false,
     },
 
-  img: {
-    type: String,
-    default: "https://via.placeholder.com/300x400?text=Product",
-  },
+    img: {
+      type: String,
+      default: "https://via.placeholder.com/300x400?text=Product",
+    },
+
+    productUrl: {
+      type: String,
+      default: "",
+      index: true,
+    },
+
+    source: {
+      type: String,
+      default: "Snapdeal",
+    },
 
     categories: {
       type: [String],
@@ -51,12 +63,33 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    inventory: {
+      type: Number,
+      default: 100,
+      min: 0,
+    },
+
     tags: {
-    type: [String],
-    default: [],
+      type: [String],
+      default: [],
+    },
+
+    attributes: {
+      type: Map,
+      of: String,
+      default: {},
+    },
+
+    // ⭐ NEW
+    detailsScraped: {
+      type: Boolean,
+      default: false,
+    },
   },
-  },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Product", ProductSchema);

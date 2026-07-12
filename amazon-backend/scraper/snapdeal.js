@@ -15,48 +15,132 @@ async function scrapeSnapdeal() {
   });
 
   const products = [];
+
   const keywords = [
-  // ================= SHOES =================
-  "loafers",
+  // ================= MEN'S FASHION =================
+  "men tshirt",
+  "men shirt",
+  "men jeans",
+  "men trousers",
+  "men joggers",
+  "men shorts",
+  "men kurta",
+  "men jacket",
+  "men sweatshirt",
+  "men hoodie",
+
+  // ================= WOMEN'S FASHION =================
+  "women tshirt",
+  "women top",
+  "women shirt",
+  "women kurti",
+  "women kurta",
+  "women saree",
+  "women lehenga",
+  "women dress",
+  "women gown",
+  "women jeans",
+  "women leggings",
+  "women palazzo",
+  "women skirt",
+  "women jacket",
+  "women hoodie",
+
+  // ================= FOOTWEAR =================
+  "running shoes",
+  "casual shoes",
+  "sports shoes",
+  "formal shoes",
+  "heels",
+  "sandals",
   "slippers",
   "flip flops",
-  "sandals",
 
-  // ================= ACCESSORIES =================
+  // ================= BAGS =================
   "backpack",
-  "travel bag",
   "laptop bag",
+  "travel bag",
   "duffle bag",
-  "sunglasses",
+  "handbag",
+  "wallet",
+
+  // ================= WATCHES =================
+  "men watch",
+  "women watch",
+  "smartwatch",
+
+  // ================= ELECTRONICS =================
+  "smartphone",
+  "iphone",
+  "samsung phone",
+  "oneplus phone",
+  "laptop",
+  "gaming laptop",
+  "tablet",
+  "earbuds",
+  "bluetooth earphones",
+  "headphones",
+  "speaker",
+  "power bank",
+  "keyboard",
+  "mouse",
+  "monitor",
 
   // ================= HOME & KITCHEN =================
+  "cookware",
   "non stick pan",
+  "pressure cooker",
   "knife set",
   "kitchen utensils",
   "dinner set",
   "water bottle",
   "flask",
-  
+  "storage container",
+  "bedsheet",
+  "blanket",
+  "pillow",
+  "curtain",
+
   // ================= BEAUTY =================
+  "face wash",
   "shampoo",
   "conditioner",
   "hair oil",
+  "body lotion",
+  "perfume",
+  "lipstick",
+  "moisturizer",
   "trimmer",
+
+  // ================= SPORTS =================
+  "cricket bat",
+  "football",
+  "badminton racket",
+  "yoga mat",
+  "dumbbells",
 
   // ================= TOYS =================
   "lego",
   "toy car",
   "remote control car",
+  "barbie doll",
+  "soft toy",
+  "puzzle",
+
+  // ================= JEWELLERY =================
+  "earrings",
+  "necklace",
+  "ring",
+  "bracelet",
+  "bangles"
   ];
-
-
 
   const seen = new Set();
 
   for (const keyword of keywords) {
-    console.log(`\n========================`);
+    console.log("\n========================");
     console.log(`🔎 Searching: ${keyword}`);
-    console.log(`========================`);
+    console.log("========================");
 
     for (let pageNo = 1; pageNo <= 3; pageNo++) {
       try {
@@ -81,6 +165,7 @@ async function scrapeSnapdeal() {
           break;
         }
 
+        // Scroll to load lazy-loaded products
         for (let s = 0; s < 8; s++) {
           await page.mouse.wheel(0, 3000);
           await page.waitForTimeout(600);
@@ -97,7 +182,7 @@ async function scrapeSnapdeal() {
                 el.querySelector(".product-title")?.innerText?.trim() || "",
 
               price:
-                el.querySelector(".product-price")?.innerText || "",
+                el.querySelector(".product-price")?.innerText?.trim() || "",
 
               image:
                 img?.currentSrc ||
@@ -110,8 +195,8 @@ async function scrapeSnapdeal() {
                   ?.split(" ")[0] ||
                 "",
 
-              url:
-                el.querySelector("a")?.href || "",
+              // ⭐ This is the important field
+              url: el.querySelector("a")?.href || "",
 
               source: "Snapdeal",
             };
@@ -132,9 +217,7 @@ async function scrapeSnapdeal() {
           added++;
         }
 
-        console.log(
-          `✅ Added: ${added} | Total: ${products.length}`
-        );
+        console.log(`✅ Added: ${added} | Total: ${products.length}`);
       } catch (err) {
         console.log(`❌ ${keyword} Page ${pageNo}: ${err.message}`);
       }
