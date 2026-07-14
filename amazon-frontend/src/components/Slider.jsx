@@ -449,11 +449,22 @@ export default function Slider() {
               </FeatureRow>
 
               <ButtonRow>
-                  <CartButton
-                    onClick={() => alert("Cart functionality coming soon!")}
-                  >
-                    Add to Cart
-                  </CartButton>
+                    <CartButton
+                      onClick={async () => {
+                        try {
+                          await axios.post("http://localhost:5001/api/cart", {
+                            userId: "demo-user",
+                            productId: item._id,
+                          });
+
+                        } catch (err) {
+                          console.error(err);
+                          alert("Failed to add to cart");
+                        }
+                      }}
+                    >
+                      Add to Cart
+                    </CartButton>
 
                   <BuyButton
                     onClick={() => navigate(`/product/${item._id}`)}

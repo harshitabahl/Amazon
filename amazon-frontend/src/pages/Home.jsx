@@ -51,7 +51,6 @@ const Home = () => {
       <Navbar />
 
       <Slider />
-
       <CategoryRow title="Recommended for You" products={homeData.recommended} />
       <CategoryRow title="Clothing" products={homeData.clothing} />
       <CategoryRow title="Shoes" products={homeData.shoes} />

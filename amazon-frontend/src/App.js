@@ -1,49 +1,28 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Products from "./pages/Products";
-import axios from "axios";
+import { CartProvider } from "./context/cartContext";
+
 import Home from "./pages/Home";
+import Products from "./pages/Products";
+import ProductDetail from "./pages/productDetail";
+import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import ProductDetail from "./pages/productDetail.jsx";
 
-function App() {
-  const [, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5001/api/auth/me",
-          { withCredentials: true }
-        );
-
-        setUser(res.data);
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getUser();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
+export default function App() {
+  console.log("APP RENDER");
 
   return (
-    <BrowserRouter>
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-      </Routes>
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
-
-export default App;

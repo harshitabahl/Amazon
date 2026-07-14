@@ -90,6 +90,7 @@ const Arrow = styled.div`
 `;
 
 const CategoryRow = ({ title, products = [] }) => {
+  console.log("CATEGORY ROW RENDER");
   const items = products.slice(0, 10);
 
   const [index, setIndex] = useState(0);

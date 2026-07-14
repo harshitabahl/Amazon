@@ -5,6 +5,7 @@ import { Badge } from "@mui/material";
 import { mobile } from "../responsive";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useCart } from "../context/cartContext";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -138,7 +139,9 @@ const HideOnMobile = styled.div`
 
 
 const Navbar = () => {
-  const quantity = 0;
+  const { quantity } = useCart();
+  console.log("NAVBAR RENDER");
+console.log("Navbar quantity:", quantity);
   const [search, setSearch] = useState("");
 
   const currentUser = JSON.parse(
@@ -146,7 +149,6 @@ const Navbar = () => {
   );
 
   const navigate = useNavigate();
-
   const handleSearch = () => {
   if (!search.trim()) return;
 
@@ -216,7 +218,7 @@ const Navbar = () => {
           )}
 
           <MenuItem>
-            <StyledLink to={currentUser ? "/cart" : "/login"}>
+            <StyledLink to="/cart">
               <div
                 style={{
                   display: "flex",
@@ -226,7 +228,7 @@ const Navbar = () => {
               >
                 CART
                 <Badge
-                  badgeContent={currentUser ? quantity : 0}
+                 badgeContent={quantity}
                   color="primary"
                 >
                   <ShoppingCartOutlined />

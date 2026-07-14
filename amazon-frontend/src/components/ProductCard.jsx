@@ -1,10 +1,12 @@
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
+import { useCart } from "../context/cartContext";
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
-
+  const { fetchCart } = useCart();
   const price = Number(product?.price) || 299;
 
   const reviews =
@@ -31,6 +33,27 @@ function ProductCard({ product }) {
     }
 
     return getPlaceholderImage(title);
+  };
+
+  const addToCart = async (e) => {
+    e.stopPropagation();
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5001/api/cart",
+        {
+          userId: "demo-user",
+          productId: product._id,
+        }
+      );
+
+      await fetchCart();      // 👈 Refresh shared cart
+
+      console.log(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add to cart");
+    }
   };
 
   return (
@@ -125,10 +148,7 @@ function ProductCard({ product }) {
 
         <button
           className="add-cart-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log(product);
-          }}
+          onClick={addToCart}
         >
           Add to Cart
         </button>
