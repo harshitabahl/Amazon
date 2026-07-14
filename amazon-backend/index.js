@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
 const filterRoute = require("./routes/filter");
+const cartRoutes = require("./routes/cart");
 
 
 require("dotenv").config();
@@ -24,7 +25,14 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: [
+  "GET",
+  "POST",
+  "PUT",
+  "PATCH",
+  "DELETE",
+  "OPTIONS",
+],
   })
 );
 
@@ -38,6 +46,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
 app.use("/api/filters", filterRoute);
+app.use("/api/cart", cartRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
