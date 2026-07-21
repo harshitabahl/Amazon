@@ -7,7 +7,8 @@ const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
 const filterRoute = require("./routes/filter");
 const cartRoutes = require("./routes/cart");
-
+const addressRoute = require("./routes/address");
+const orderRoute = require("./routes/order");
 
 require("dotenv").config();
 
@@ -47,6 +48,8 @@ app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
 app.use("/api/filters", filterRoute);
 app.use("/api/cart", cartRoutes);
+app.use("/api/address", addressRoute);
+app.use("/api/orders", orderRoute);
 
 mongoose
   .connect(process.env.MONGO_URI)

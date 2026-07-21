@@ -185,4 +185,33 @@ router.delete("/remove", async (req, res) => {
   }
 });
 
+// ================= CLEAR CART =================
+router.delete("/clear/:userId", async (req, res) => {
+  try {
+    const cart = await Cart.findOne({
+      userId: req.params.userId,
+    });
+
+    if (!cart) {
+      return res.status(404).json({
+        message: "Cart not found",
+      });
+    }
+
+    cart.items = [];
+
+    await cart.save();
+
+    res.status(200).json({
+      message: "Cart cleared successfully",
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Failed to clear cart",
+    });
+  }
+});
+
 module.exports = router;
