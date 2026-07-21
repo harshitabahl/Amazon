@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./cart.css";
@@ -6,6 +7,7 @@ import { useCart } from "../context/cartContext";
 function Cart() {
   const { cart, fetchCart } = useCart();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const loadCart = async () => {
@@ -169,8 +171,8 @@ function Cart() {
           <span>₹{subtotal}</span>
         </div>
 
-        <button className="checkout-btn">
-          Proceed to Checkout
+        <button className="checkout-btn" onClick={() => navigate("/checkout")}>
+            Proceed to Checkout
         </button>
       </div>
     </div>
