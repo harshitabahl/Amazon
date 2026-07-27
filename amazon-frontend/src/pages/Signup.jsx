@@ -31,7 +31,7 @@ const Signup = () => {
 
     try {
       const res = await axios.post(
-        "http://https://amazon-7t4h.onrender.com/api/auth/signup",
+        "https://amazon-7t4h.onrender.com/api/auth/signup",
         { username, email, password }
       );
 

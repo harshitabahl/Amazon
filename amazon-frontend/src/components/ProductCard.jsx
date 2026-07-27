@@ -29,7 +29,7 @@ function ProductCard({ product }) {
     }
 
     if (typeof img === "string" && img.startsWith("/uploads")) {
-      return `http://https://amazon-7t4h.onrender.com${img}`;
+      return `https://amazon-7t4h.onrender.com${img}`;
     }
 
     return getPlaceholderImage(title);
@@ -40,7 +40,7 @@ function ProductCard({ product }) {
 
     try {
       const res = await axios.post(
-        "http://https://amazon-7t4h.onrender.com/api/cart",
+        "https://amazon-7t4h.onrender.com/api/cart",
         {
           userId: "demo-user",
           productId: product._id,

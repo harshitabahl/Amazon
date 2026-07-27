@@ -26,7 +26,7 @@ const OrderSummary = () => {
     console.log("1. Creating order...");
 
     const res = await axios.post(
-      "http://https://amazon-7t4h.onrender.com/api/orders",
+      "https://amazon-7t4h.onrender.com/api/orders",
       {
         userId: "demo-user",
       }
@@ -37,7 +37,7 @@ const OrderSummary = () => {
     console.log("2. Clearing cart...");
 
     const clearRes = await axios.delete(
-      "http://https://amazon-7t4h.onrender.com/api/cart/clear/demo-user"
+      "https://amazon-7t4h.onrender.com/api/cart/clear/demo-user"
     );
 
     console.log("✅ Cart cleared", clearRes.data);

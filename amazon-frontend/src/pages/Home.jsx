@@ -25,26 +25,26 @@ const Home = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://https://amazon-7t4h.onrender.com/api/products/home")
-      .then((res) => {
-        console.log("HOME API RESPONSE:", res.data);
+  axios
+    .get("https://amazon-7t4h.onrender.com/api/products/home")
+    .then((res) => {
+      console.log("HOME API RESPONSE:", res.data);
 
-        setHomeData({
-          recommended: addFallbackImage(res.data.recommended || []),
-          clothing: addFallbackImage(res.data.clothing || []),
-          shoes: addFallbackImage(res.data.shoes || []),
-          electronics: addFallbackImage(res.data.electronics || []),
-          watches: addFallbackImage(res.data.watches || []),
-          bags: addFallbackImage(res.data.bags || []),
-          homeKitchen: addFallbackImage(res.data.homeKitchen || []),
-          trending: addFallbackImage(res.data.trending || []),
-        });
-      })
-      .catch((err) => {
-        console.log("HOME API ERROR:", err);
+      setHomeData({
+        recommended: addFallbackImage(res.data.recommended || []),
+        clothing: addFallbackImage(res.data.clothing || []),
+        shoes: addFallbackImage(res.data.shoes || []),
+        electronics: addFallbackImage(res.data.electronics || []),
+        watches: addFallbackImage(res.data.watches || []),
+        bags: addFallbackImage(res.data.bags || []),
+        homeKitchen: addFallbackImage(res.data.homeKitchen || []),
+        trending: addFallbackImage(res.data.trending || []),
       });
-  }, []);
+    })
+    .catch((err) => {
+      console.log("HOME API ERROR:", err);
+    });
+}, []);
 
   return (
     <div>

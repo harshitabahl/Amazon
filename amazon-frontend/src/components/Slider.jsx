@@ -326,7 +326,7 @@ export default function Slider() {
     const fetchHero = async () => {
       try {
         const res = await axios.get(
-          "http://https://amazon-7t4h.onrender.com/api/products/hero"
+          "https://amazon-7t4h.onrender.com/api/products/hero"
         );
 
         setSlides(res.data.slice(0, 5));
@@ -467,7 +467,7 @@ export default function Slider() {
 
                         try {
                           await axios.post(
-                            "http://https://amazon-7t4h.onrender.com/api/cart",
+                            "https://amazon-7t4h.onrender.com/api/cart",
                             {
                               userId: "demo-user",
                               productId: item._id,

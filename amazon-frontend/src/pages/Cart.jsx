@@ -24,7 +24,7 @@ function Cart() {
   const increaseQuantity = async (productId) => {
     try {
       await axios.patch(
-        "http://https://amazon-7t4h.onrender.com/api/cart/increase",
+        "https://amazon-7t4h.onrender.com/api/cart/increase",
         {
           userId: "demo-user",
           productId,
@@ -40,7 +40,7 @@ function Cart() {
   const decreaseQuantity = async (productId) => {
     try {
       await axios.patch(
-        "http://https://amazon-7t4h.onrender.com/api/cart/decrease",
+        "https://amazon-7t4h.onrender.com/api/cart/decrease",
         {
           userId: "demo-user",
           productId,
@@ -56,7 +56,7 @@ function Cart() {
   const removeItem = async (productId) => {
     try {
       await axios.delete(
-        "http://https://amazon-7t4h.onrender.com/api/cart/remove",
+        "https://amazon-7t4h.onrender.com/api/cart/remove",
         {
           data: {
             userId: "demo-user",

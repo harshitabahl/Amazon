@@ -16,14 +16,14 @@ const Login = ({ setUser }) => {
     try {
       // 1. login (sets cookie)
       await axios.post(
-        "http://https://amazon-7t4h.onrender.com/api/auth/login",
+        "https://amazon-7t4h.onrender.com/api/auth/login",
         { email, password },
         { withCredentials: true }
       );
 
       // 2. fetch user (/me)
       const res = await axios.get(
-        "http://https://amazon-7t4h.onrender.com/api/auth/me",
+        "https://amazon-7t4h.onrender.com/api/auth/me",
         { withCredentials: true }
       );
 
