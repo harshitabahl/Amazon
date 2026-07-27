@@ -15,7 +15,7 @@ export const CartProvider = ({ children }) => {
   const fetchCart = useCallback(async () => {
   try {
     const res = await axios.get(
-      "http://https://amazon-7t4h.onrender.com/api/cart/demo-user"
+      "https://amazon-7t4h.onrender.com/api/cart/demo-user"
     );
 
     setCart(res.data);
