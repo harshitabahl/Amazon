@@ -22,18 +22,23 @@ app.use(
   )
 );
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://amazon-krpi5ea0a-harshitabahls-projects.vercel.app"
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
     methods: [
-  "GET",
-  "POST",
-  "PUT",
-  "PATCH",
-  "DELETE",
-  "OPTIONS",
-],
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
   })
 );
 
