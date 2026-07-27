@@ -61,7 +61,7 @@ function Products() {
   async function fetchFilters() {
     try {
       const res = await axios.get(
-        "http://localhost:5001/api/filters",
+        "http://https://amazon-7t4h.onrender.com/api/filters",
         {
           params: {
             page,
@@ -95,7 +95,7 @@ function Products() {
       setLoading(true);
 
       const res = await axios.get(
-        "http://localhost:5001/api/products",
+        "http://https://amazon-7t4h.onrender.com/api/products",
         {
           params: {
             page,

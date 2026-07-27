@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {useCallback} from "react"
+import { useCart } from "../context/cartContext";
+import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
 
 /* ================= CONTAINER ================= */
@@ -79,8 +81,8 @@ export const Circle = styled.div`
   box-shadow: inset 0 0 50px rgba(255,255,255,.7);
 
   @media (max-width: 1024px) {
-    width: 350px;
-    height: 350px;
+    width: 360px;
+    height: 360px;
   }
 
   @media (max-width: 768px) {
@@ -94,8 +96,8 @@ export const Image = styled.img`
   z-index: 2;
 
   width: 100%;
-  max-width: 520px;
-  max-height: 470px;
+  max-width: 420px;
+  max-height: 420px;
 
   object-fit: contain;
 
@@ -145,18 +147,23 @@ export const Badge = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 46px;
+  font-size: 42px;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #111;
   margin: 0;
 
-  @media (max-width: 1024px) {
-    font-size: 36px;
-  }
+  height: 110px;
 
-  @media (max-width: 768px) {
-    font-size: 24px;
+  overflow: hidden;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  @media (max-width:768px){
+    font-size:26px;
+    height:auto;
   }
 `;
 
@@ -167,17 +174,17 @@ export const Rating = styled.div`
 `;
 
 export const Desc = styled.p`
-  font-size: 18px;
-  line-height: 1.8;
-  color: #555;
+  font-size:18px;
+  line-height:1.7;
+  color:#555;
 
-  max-width: 540px;
+  height:90px;
 
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  overflow:hidden;
 
-  overflow: hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
 `;
 
 export const FeatureRow = styled.div`
@@ -226,7 +233,8 @@ export const Discount = styled.span`
 export const ButtonRow = styled.div`
   display: flex;
   gap: 18px;
-  margin-top: 10px;
+  margin-top:auto;
+  padding-top:20px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -310,13 +318,15 @@ export default function Slider() {
   const [index, setIndex] = useState(0);
   const navigate = useNavigate();
 
+  const { fetchCart } = useCart();
+
   const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchHero = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5001/api/products/hero"
+          "http://https://amazon-7t4h.onrender.com/api/products/hero"
         );
 
         setSlides(res.data.slice(0, 5));
@@ -400,10 +410,12 @@ export default function Slider() {
             <ImgContainer>
               <Circle />
               <Image
-                src={item.img}
+                src={
+                  item.img && item.img.trim() !== ""
+                    ? item.img
+                    : getPlaceholderImage(item.title)
+                }
                 alt={item.title}
-                onClick={() => navigate(`/product/${item._id}`)}
-                style={{ cursor: "pointer" }}
               />
             </ImgContainer>
 
@@ -450,20 +462,27 @@ export default function Slider() {
 
               <ButtonRow>
                     <CartButton
-                      onClick={async () => {
-                        try {
-                          await axios.post("http://localhost:5001/api/cart", {
-                            userId: "demo-user",
-                            productId: item._id,
-                          });
+                      onClick={async (e) => {
+                        e.stopPropagation();
 
+                        try {
+                          await axios.post(
+                            "http://https://amazon-7t4h.onrender.com/api/cart",
+                            {
+                              userId: "demo-user",
+                              productId: item._id,
+                            }
+                          );
+
+                          await fetchCart();
+
+                          alert("Added to Cart");
                         } catch (err) {
                           console.error(err);
-                          alert("Failed to add to cart");
                         }
                       }}
                     >
-                      Add to Cart
+                    Add to Cart
                     </CartButton>
 
                   <BuyButton

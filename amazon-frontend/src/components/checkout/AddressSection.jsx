@@ -29,7 +29,7 @@ const AddressSection = () => {
   const fetchAddress = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5001/api/address/demo-user"
+        "http://https://amazon-7t4h.onrender.com/api/address/demo-user"
       );
 
       setAddress(res.data);
@@ -41,7 +41,7 @@ const AddressSection = () => {
   const saveAddress = async () => {
     try {
       await axios.post(
-        "http://localhost:5001/api/address",
+        "http://https://amazon-7t4h.onrender.com/api/address",
         {
           userId: "demo-user",
           ...formData,

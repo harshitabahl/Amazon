@@ -26,7 +26,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5001/api/products/home")
+      .get("http://https://amazon-7t4h.onrender.com/api/products/home")
       .then((res) => {
         console.log("HOME API RESPONSE:", res.data);
 

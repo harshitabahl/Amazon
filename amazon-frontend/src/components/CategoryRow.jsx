@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
 
 const Container = styled.div`
   margin: 35px 0;
@@ -19,7 +20,7 @@ const RowWrapper = styled.div`
 const Window = styled.div`
   overflow: hidden;
   width: 100%;
-  padding: 0 60px;
+  padding: 12px 70px;
   box-sizing: border-box;
 `;
 
@@ -30,39 +31,8 @@ const Track = styled.div`
   transform: translateX(calc(-${({ $index }) => $index * 100}%));
 `;
 
-const Card = styled.div`
+const CardWrapper = styled.div`
   flex: 0 0 calc(${({ $cardWidth }) => $cardWidth}% - 14px);
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-sizing: border-box;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: 0.25s;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  }
-`;
-
-const Img = styled.img`
-  width: 100%;
-  height: 220px;
-  object-fit: contain;
-`;
-
-const Name = styled.p`
-  font-size: 14px;
-  font-weight: 500;
-  margin: 14px 0 8px;
-  height: 42px;
-  overflow: hidden;
-  color: #222;
-`;
-
-const Price = styled.h3`
-  color: #b12704;
-  margin: 0;
 `;
 
 const Arrow = styled.div`
@@ -90,7 +60,6 @@ const Arrow = styled.div`
 `;
 
 const CategoryRow = ({ title, products = [] }) => {
-  console.log("CATEGORY ROW RENDER");
   const items = products.slice(0, 10);
 
   const [index, setIndex] = useState(0);
@@ -105,6 +74,7 @@ const CategoryRow = ({ title, products = [] }) => {
 
     update();
     window.addEventListener("resize", update);
+
     return () => window.removeEventListener("resize", update);
   }, []);
 
@@ -133,20 +103,12 @@ const CategoryRow = ({ title, products = [] }) => {
         <Window>
           <Track $index={index}>
             {items.map((item) => (
-              <Card key={item._id} $cardWidth={cardWidth}>
-                <Img
-                  src={item.img || "/placeholder.png"}
-                  alt={item.title}
-                />
-
-                <Name>
-                  {item.title?.length > 55
-                    ? item.title.slice(0, 55) + "..."
-                    : item.title}
-                </Name>
-
-                <Price>₹{item.price?.toLocaleString("en-IN")}</Price>
-              </Card>
+              <CardWrapper
+                key={item._id}
+                $cardWidth={cardWidth}
+              >
+                <ProductCard product={item} />
+              </CardWrapper>
             ))}
           </Track>
         </Window>
