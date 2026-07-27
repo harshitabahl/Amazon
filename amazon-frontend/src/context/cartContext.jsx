@@ -13,29 +13,30 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
 
   const fetchCart = useCallback(async () => {
-  try {
-    const res = await axios.get(
-      "https://amazon-7t4h.onrender.com/api/cart/demo-user"
-    );
+    try {
+      const res = await axios.get(
+        "https://amazon-7t4h.onrender.com/api/cart/demo-user"
+      );
 
-    setCart(res.data);
-  } catch (err) {
-    console.error(err);
-  }
-}, []);
+      setCart(res.data);
+    } catch (err) {
+      console.error("Cart fetch error:", err);
+    }
+  }, []);
 
   useEffect(() => {
-  fetchCart();
-  }, []);
+    fetchCart();
+  }, [fetchCart]);
 
   const quantity =
     cart?.items?.reduce(
       (sum, item) => sum + item.quantity,
       0
     ) || 0;
-    console.log("Cart updated:", cart);
-    console.log("Quantity:", quantity);
-    console.log("CartProvider Render");
+
+  console.log("Cart updated:", cart);
+  console.log("Quantity:", quantity);
+  console.log("CartProvider Render");
 
   return (
     <CartContext.Provider
