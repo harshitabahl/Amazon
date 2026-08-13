@@ -12,53 +12,50 @@ const StyledLink = styled(Link)`
   color: inherit;
 `;
 
+/* ================= CONTAINER ================= */
+
 const Container = styled.div`
   height: 80px;
+  width: 100%;
   background: white;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  overflow: hidden;
 
   ${mobile`
     height: 60px;
   `}
 `;
 
+/* ================= WRAPPER ================= */
+
 const Wrapper = styled.div`
   height: 100%;
+  width: 100%;
   padding: 0 40px;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+
+  box-sizing: border-box;
 
   ${mobile`
-    padding: 0 10px;
+    padding: 0 8px;
+    gap: 8px;
   `}
 `;
+
+/* ================= LEFT ================= */
 
 const Left = styled.div`
   flex: 1;
+  min-width: 0;
+
   display: flex;
   align-items: center;
-`;
-
-const Center = styled.div`
-  flex: 2;
-  display: flex;
-  justify-content: center;
 
   ${mobile`
-    flex: 1;
-  `}
-`;
-
-const Right = styled.div`
-  flex: 1.2;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  ${mobile`
-    flex: 1;
-    justify-content: flex-end;
+    flex: 0 0 auto;
   `}
 `;
 
@@ -68,75 +65,149 @@ const Logo = styled.h1`
   font-weight: 700;
   margin: 0;
   cursor: pointer;
+  white-space: nowrap;
+
+  ${mobile`
+    font-size: 21px;
+  `}
+`;
+
+/* ================= CENTER ================= */
+
+const Center = styled.div`
+  flex: 2;
+  min-width: 0;
+
+  display: flex;
+  justify-content: center;
+
+  ${mobile`
+    flex: 1;
+  `}
 `;
 
 const SearchContainer = styled.div`
   width: 100%;
   max-width: 700px;
+  height: 50px;
+
   border: 1px solid #cfcfcf;
   border-radius: 6px;
+
   display: flex;
   align-items: center;
 
+  overflow: hidden;
+  box-sizing: border-box;
+
   ${mobile`
-    max-width: 100%;
+    height: 40px;
   `}
 `;
 
 const Input = styled.input`
   flex: 1;
+  min-width: 0;
+  width: 100%;
+
   border: none;
   outline: none;
+
   padding: 14px 16px;
   font-size: 16px;
 
+  box-sizing: border-box;
+
   ${mobile`
-    padding: 10px;
-    font-size: 14px;
+    padding: 8px 9px;
+    font-size: 13px;
   `}
 `;
 
 const SearchButton = styled.div`
-  width: 55px;
+  flex: 0 0 55px;
   height: 50px;
+
   background: #111;
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
 
   ${mobile`
-    width: 45px;
+    flex: 0 0 40px;
     height: 40px;
+  `}
+`;
+
+/* ================= RIGHT ================= */
+
+const Right = styled.div`
+  flex: 1.2;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  ${mobile`
+    flex: 0 0 auto;
   `}
 `;
 
 const MenuItem = styled.div`
   font-size: 15px;
   font-weight: 600;
+
   margin-left: 20px;
+
   cursor: pointer;
+
   display: flex;
   align-items: center;
-  transition: all 0.2s ease;
+
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
-    color: #111;
   }
 
   ${mobile`
-    margin-left: 10px;
-    font-size: 12px;
+    margin-left: 0;
+    font-size: 11px;
   `}
 `;
 
-const HideOnMobile = styled.div`
+/* Hide authentication text on mobile */
+
+const AuthItem = styled(MenuItem)`
   ${mobile`
     display: none;
   `}
 `;
+
+/* ================= CART ================= */
+
+const CartContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  ${mobile`
+    gap: 0;
+  `}
+`;
+
+const CartText = styled.span`
+  ${mobile`
+    display: none;
+  `}
+`;
+
+/* ================= NAVBAR ================= */
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -150,6 +221,8 @@ const Navbar = () => {
 
   const cartQuantity = currentUser ? quantity : 0;
 
+  /* ================= SEARCH ================= */
+
   const handleSearch = () => {
     if (!search.trim()) return;
 
@@ -158,28 +231,34 @@ const Navbar = () => {
     );
   };
 
+  /* ================= LOGOUT ================= */
+
   const handleLogout = () => {
-  localStorage.removeItem("user");
-  localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
-  window.dispatchEvent(new Event("authChange"));
+    window.dispatchEvent(new Event("authChange"));
 
-  navigate("/");
-};
+    navigate("/");
+  };
 
   return (
     <Container>
       <Wrapper>
-        {/* LEFT */}
+
+        {/* ================= LOGO ================= */}
+
         <Left>
           <StyledLink to="/">
             <Logo>Amazon</Logo>
           </StyledLink>
         </Left>
 
-        {/* CENTER */}
+        {/* ================= SEARCH ================= */}
+
         <Center>
           <SearchContainer>
+
             <Input
               placeholder="Search Products"
               value={search}
@@ -194,53 +273,69 @@ const Navbar = () => {
             <SearchButton onClick={handleSearch}>
               <SearchIcon />
             </SearchButton>
+
           </SearchContainer>
         </Center>
 
-        {/* RIGHT */}
+        {/* ================= RIGHT ================= */}
+
         <Right>
+
+          {/* AUTH */}
+
           {!currentUser ? (
             <>
-              <MenuItem>
+              <AuthItem>
                 <StyledLink to="/login">
                   SIGN IN
                 </StyledLink>
-              </MenuItem>
+              </AuthItem>
 
-              <HideOnMobile>
-                <MenuItem>
-                  <StyledLink to="/signup">
-                    CREATE ACCOUNT
-                  </StyledLink>
-                </MenuItem>
-              </HideOnMobile>
+              <AuthItem>
+                <StyledLink to="/signup">
+                  CREATE ACCOUNT
+                </StyledLink>
+              </AuthItem>
             </>
           ) : (
-            <MenuItem onClick={handleLogout}>
+            <AuthItem onClick={handleLogout}>
               SIGN OUT
-            </MenuItem>
+            </AuthItem>
           )}
+
+          {/* CART */}
 
           <MenuItem>
             <StyledLink to="/cart">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                CART
+
+              <CartContent>
+
+                <CartText>
+                  CART
+                </CartText>
+
                 <Badge
                   badgeContent={cartQuantity}
                   color="primary"
                 >
-                  <ShoppingCartOutlined />
+                  <ShoppingCartOutlined
+                    sx={{
+                      fontSize: {
+                        xs: 28,
+                        sm: 30,
+                        md: 32,
+                      },
+                    }}
+                  />
                 </Badge>
-              </div>
+
+              </CartContent>
+
             </StyledLink>
           </MenuItem>
+
         </Right>
+
       </Wrapper>
     </Container>
   );

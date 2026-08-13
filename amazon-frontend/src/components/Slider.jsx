@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cartContext";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
-
 /* ================= CONTAINER ================= */
+
 export const Container = styled.div`
   width: 100%;
   height: 560px;
@@ -19,8 +19,11 @@ export const Container = styled.div`
   }
 
   @media (max-width: 768px) {
+    width: 100%;
     height: auto;
+    min-height: 650px;
     padding: 20px 0;
+    overflow: hidden;
   }
 `;
 
@@ -47,14 +50,22 @@ export const Slide = styled.div`
   box-sizing: border-box;
 
   @media (max-width: 1024px) {
-    padding: 40px 40px;
+    padding: 40px;
   }
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    min-width: 100%;
+    width: 100%;
     height: auto;
-    padding: 30px 20px;
-    gap: 30px;
+    min-height: 650px;
+
+    flex-direction: column;
+    justify-content: flex-start;
+
+    padding: 25px 20px 40px;
+    gap: 20px;
+
+    box-sizing: border-box;
   }
 `;
 
@@ -68,6 +79,12 @@ export const ImgContainer = styled.div`
   align-items: center;
 
   position: relative;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 250px;
+    flex: none;
+  }
 `;
 
 export const Circle = styled.div`
@@ -76,8 +93,10 @@ export const Circle = styled.div`
 
   border-radius: 50%;
   background: linear-gradient(135deg, #ffffff, #e9edf3);
+
   position: absolute;
-  box-shadow: inset 0 0 50px rgba(255,255,255,.7);
+
+  box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.7);
 
   @media (max-width: 1024px) {
     width: 360px;
@@ -85,8 +104,8 @@ export const Circle = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 260px;
-    height: 260px;
+    width: 230px;
+    height: 230px;
   }
 `;
 
@@ -100,12 +119,14 @@ export const Image = styled.img`
 
   object-fit: contain;
 
-  filter: drop-shadow(0 18px 35px rgba(0,0,0,.18));
-  transition: .35s;
+  filter: drop-shadow(0 18px 35px rgba(0, 0, 0, 0.18));
+  transition: 0.35s;
 
   @media (max-width: 768px) {
-    max-width: 300px;
-    max-height: 260px;
+    width: 220px;
+    max-width: 220px;
+    height: 220px;
+    max-height: 220px;
   }
 
   &:hover {
@@ -113,43 +134,73 @@ export const Image = styled.img`
   }
 `;
 
+/* ================= CONTENT ================= */
+
 export const Content = styled.div`
-  flex: .95;
+  flex: 0.95;
+
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  min-width: 0;
 
   @media (max-width: 1024px) {
     gap: 14px;
   }
 
   @media (max-width: 768px) {
-    margin-top: 0;
+    width: 100%;
+    max-width: 100%;
+
+    flex: none;
+
+    margin: 0;
+    padding: 0 10px;
+
+    box-sizing: border-box;
+
     text-align: center;
     align-items: center;
+
     gap: 12px;
+
+    min-width: 0;
   }
 `;
+
+/* ================= BADGE ================= */
 
 export const Badge = styled.div`
   width: fit-content;
 
   padding: 8px 16px;
 
-  background: #CC0C39;
+  background: #cc0c39;
   color: white;
 
   border-radius: 6px;
 
   font-size: 14px;
   font-weight: 700;
+
+  @media (max-width: 768px) {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
 `;
 
+/* ================= TITLE ================= */
+
 export const Title = styled.h1`
+  width: 100%;
+
   font-size: 42px;
   font-weight: 800;
   line-height: 1.2;
+
   color: #111;
+
   margin: 0;
 
   height: 110px;
@@ -160,52 +211,112 @@ export const Title = styled.h1`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 
-  @media (max-width:768px){
-    font-size:26px;
-    height:auto;
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+
+    font-size: 25px;
+    line-height: 1.25;
+
+    -webkit-line-clamp: 3;
+
+    overflow-wrap: anywhere;
   }
 `;
 
+/* ================= RATING ================= */
+
 export const Rating = styled.div`
-  color: #FFA41C;
+  color: #ffa41c;
   font-size: 19px;
   font-weight: 600;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+
+    white-space: normal;
+  }
 `;
+
+/* ================= DESCRIPTION ================= */
 
 export const Desc = styled.p`
-  font-size:18px;
-  line-height:1.7;
-  color:#555;
+  width: 100%;
 
-  height:90px;
+  font-size: 18px;
+  line-height: 1.7;
 
-  overflow:hidden;
+  color: #555;
 
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
+  height: 90px;
+
+  overflow: hidden;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  margin: 0;
+
+  @media (max-width: 768px) {
+    height: auto;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    -webkit-line-clamp: 3;
+  }
 `;
+
+/* ================= FEATURES ================= */
 
 export const FeatureRow = styled.div`
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
+  width: 100%;
 
-  color:#007600;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
 
-  font-size:15px;
-  font-weight:600;
+  color: #007600;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+
+    gap: 8px 14px;
+
+    font-size: 13px;
+  }
 `;
 
+/* ================= PRICE ================= */
+
 export const PriceRow = styled.div`
-  display:flex;
-  align-items:flex-end;
-  gap:16px;
+  display: flex;
+  align-items: flex-end;
+
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px 12px;
+  }
 `;
 
 export const Price = styled.h2`
   font-size: 56px;
-  color: #B12704;
+
+  color: #b12704;
+
   margin: 0;
 
   @media (max-width: 1024px) {
@@ -213,63 +324,111 @@ export const Price = styled.h2`
   }
 
   @media (max-width: 768px) {
-    font-size: 30px;
+    font-size: 32px;
   }
 `;
 
 export const OldPrice = styled.span`
-  font-size:24px;
-  color:#777;
-  text-decoration:line-through;
+  font-size: 24px;
+
+  color: #777;
+
+  text-decoration: line-through;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 export const Discount = styled.span`
-  color:#007600;
-  font-size:22px;
-  font-weight:700;
+  color: #007600;
+
+  font-size: 22px;
+
+  font-weight: 700;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
+
+/* ================= BUTTONS ================= */
 
 export const ButtonRow = styled.div`
   display: flex;
+
   gap: 18px;
-  margin-top:auto;
-  padding-top:20px;
+
+  margin-top: auto;
+
+  padding-top: 20px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
     width: 100%;
+
+    flex-direction: column;
+
     align-items: center;
+
+    gap: 10px;
+
+    margin-top: 0;
+
+    padding-top: 10px;
   }
 `;
 
 export const CartButton = styled.button`
   padding: 15px 34px;
+
   border: none;
+
   border-radius: 999px;
-  background: #FFD814;
+
+  background: #ffd814;
+
   font-size: 17px;
+
   font-weight: 700;
+
   cursor: pointer;
-  transition: .25s;
+
+  transition: 0.25s;
 
   @media (max-width: 768px) {
     width: 100%;
+
+    padding: 13px 25px;
+
+    font-size: 15px;
   }
 `;
 
 export const BuyButton = styled.button`
   padding: 15px 34px;
+
   border: none;
+
   border-radius: 999px;
-  background: #FA8900;
+
+  background: #fa8900;
+
   color: white;
+
   font-size: 17px;
+
   font-weight: 700;
+
   cursor: pointer;
-  transition: .25s;
+
+  transition: 0.25s;
 
   @media (max-width: 768px) {
     width: 100%;
+
+    padding: 13px 25px;
+
+    font-size: 15px;
   }
 `;
 
@@ -278,57 +437,75 @@ export const BuyButton = styled.button`
 export const Arrow = styled.div`
   width: 60px;
   height: 60px;
+
   border-radius: 50%;
+
   background: white;
 
   position: absolute;
+
   top: 50%;
+
   transform: translateY(-50%);
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   font-size: 30px;
+
   cursor: pointer;
+
   z-index: 20;
 
-  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 
-  left: ${props => props.left && "25px"};
-  right: ${props => props.right && "25px"};
+  left: ${(props) => props.left && "25px"};
+  right: ${(props) => props.right && "25px"};
 
-  transition: .25s;
+  transition: 0.25s;
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
+    width: 42px;
+    height: 42px;
+
+    font-size: 20px;
+
+    left: ${(props) => props.left && "8px"};
+    right: ${(props) => props.right && "8px"};
   }
 
   &:hover {
-    background: #FFD814;
+    background: #ffd814;
+
     transform: translateY(-50%) scale(1.08);
   }
 `;
 
+/* ================= SLIDER ================= */
+
 export default function Slider() {
   const [slides, setSlides] = useState([]);
   const [index, setIndex] = useState(0);
+
   const navigate = useNavigate();
 
   const { fetchCart } = useCart();
 
   const intervalRef = useRef(null);
 
-  // ================= CURRENT USER =================
+  /* ================= CURRENT USER ================= */
+
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
   );
 
   const userId = currentUser?._id || currentUser?.id;
 
-  // ================= FETCH HERO PRODUCTS =================
+  /* ================= FETCH HERO PRODUCTS ================= */
+
   useEffect(() => {
     const fetchHero = async () => {
       try {
@@ -345,7 +522,7 @@ export default function Slider() {
     fetchHero();
   }, []);
 
-  // ================= AUTO SLIDER =================
+  /* ================= AUTO SLIDER ================= */
 
   const stopAuto = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -369,9 +546,11 @@ export default function Slider() {
     };
   }, [startAuto]);
 
-  // ================= NEXT =================
+  /* ================= NEXT ================= */
 
   const next = () => {
+    if (!slides.length) return;
+
     stopAuto();
 
     setIndex((prev) => (prev + 1) % slides.length);
@@ -379,9 +558,11 @@ export default function Slider() {
     setTimeout(startAuto, 200);
   };
 
-  // ================= PREVIOUS =================
+  /* ================= PREVIOUS ================= */
 
   const prev = () => {
+    if (!slides.length) return;
+
     stopAuto();
 
     setIndex((prev) =>
@@ -391,12 +572,11 @@ export default function Slider() {
     setTimeout(startAuto, 200);
   };
 
-  // ================= ADD TO CART =================
+  /* ================= ADD TO CART ================= */
 
   const addToCart = async (e, productId) => {
     e.stopPropagation();
 
-    // User must be logged in
     if (!currentUser || !userId) {
       alert("Please sign in to add items to your cart.");
       navigate("/login");
@@ -412,7 +592,6 @@ export default function Slider() {
         }
       );
 
-      // Refresh global cart
       await fetchCart();
 
       console.log("Slider item added:", res.data);
@@ -425,9 +604,9 @@ export default function Slider() {
     }
   };
 
-  // ================= LOADING =================
+  /* ================= LOADING ================= */
 
-     if (!slides.length) {
+  if (!slides.length) {
     return (
       <Container>
         <div
@@ -443,7 +622,7 @@ export default function Slider() {
     );
   }
 
-  // ================= UI =================
+  /* ================= UI ================= */
 
   return (
     <Container
@@ -457,6 +636,9 @@ export default function Slider() {
       <Wrapper $index={index}>
         {slides.map((item) => (
           <Slide key={item._id}>
+
+            {/* IMAGE */}
+
             <ImgContainer>
               <Circle />
 
@@ -470,14 +652,21 @@ export default function Slider() {
               />
             </ImgContainer>
 
+            {/* CONTENT */}
+
             <Content>
-              <Badge>Limited Time Deal</Badge>
+
+              <Badge>
+                Limited Time Deal
+              </Badge>
 
               <Title
                 onClick={() =>
                   navigate(`/product/${item._id}`)
                 }
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer",
+                }}
               >
                 {item.title}
               </Title>
@@ -494,22 +683,39 @@ export default function Slider() {
               </Rating>
 
               <PriceRow>
-                <Price>₹{item.price}</Price>
+                <Price>
+                  ₹{item.price}
+                </Price>
 
-                <OldPrice>₹999</OldPrice>
+                <OldPrice>
+                  ₹999
+                </OldPrice>
 
-                <Discount>60% OFF</Discount>
+                <Discount>
+                  60% OFF
+                </Discount>
               </PriceRow>
 
-              <Desc>{item.desc}</Desc>
+              <Desc>
+                {item.desc}
+              </Desc>
 
               <FeatureRow>
-                <span>✓ Free Delivery</span>
-                <span>✓ Easy Returns</span>
-                <span>✓ Cash on Delivery</span>
+                <span>
+                  ✓ Free Delivery
+                </span>
+
+                <span>
+                  ✓ Easy Returns
+                </span>
+
+                <span>
+                  ✓ Cash on Delivery
+                </span>
               </FeatureRow>
 
               <ButtonRow>
+
                 <CartButton
                   onClick={(e) =>
                     addToCart(e, item._id)
@@ -520,13 +726,18 @@ export default function Slider() {
 
                 <BuyButton
                   onClick={() =>
-                    navigate(`/product/${item._id}`)
+                    navigate(
+                      `/product/${item._id}`
+                    )
                   }
                 >
                   View Details
                 </BuyButton>
+
               </ButtonRow>
+
             </Content>
+
           </Slide>
         ))}
       </Wrapper>
