@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 const AddressSection = () => {
@@ -15,9 +15,34 @@ const AddressSection = () => {
     pincode: "",
   });
 
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const userId = currentUser?._id || currentUser?.id;
+
+  const fetchAddress = useCallback(async () => {
+    if (!userId) {
+      console.log("No logged-in user found");
+      setAddress(null);
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        `https://amazon-7t4h.onrender.com/api/address/${userId}`
+      );
+
+      setAddress(res.data);
+    } catch (err) {
+      console.log("No saved address");
+      setAddress(null);
+    }
+  }, [userId]);
+
   useEffect(() => {
     fetchAddress();
-  }, []);
+  }, [fetchAddress]);
 
   const handleChange = (e) => {
     setFormData({
@@ -26,24 +51,17 @@ const AddressSection = () => {
     });
   };
 
-  const fetchAddress = async () => {
-    try {
-      const res = await axios.get(
-        "https://amazon-7t4h.onrender.com/api/address/demo-user"
-      );
-
-      setAddress(res.data);
-    } catch (err) {
-      console.log("No saved address");
-    }
-  };
-
   const saveAddress = async () => {
+    if (!userId) {
+      alert("Please login first");
+      return;
+    }
+
     try {
       await axios.post(
         "https://amazon-7t4h.onrender.com/api/address",
         {
-          userId: "demo-user",
+          userId,
           ...formData,
         }
       );
@@ -52,23 +70,36 @@ const AddressSection = () => {
       setShowForm(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to save address");
+
+      alert(
+        err.response?.data?.message ||
+          "Failed to save address"
+      );
     }
   };
 
   const handleEditAddress = () => {
     setFormData({
-      fullName: address.fullName,
-      phone: address.phone,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      state: address.state,
-      pincode: address.pincode,
+      fullName: address.fullName || "",
+      phone: address.phone || "",
+      addressLine1: address.addressLine1 || "",
+      addressLine2: address.addressLine2 || "",
+      city: address.city || "",
+      state: address.state || "",
+      pincode: address.pincode || "",
     });
 
     setShowForm(true);
   };
+
+  if (!userId) {
+    return (
+      <div className="checkout-card">
+        <h2>📍 Delivery Address</h2>
+        <p>Please login to continue with checkout.</p>
+      </div>
+    );
+  }
 
   if (address && !showForm) {
     return (

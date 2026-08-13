@@ -1,8 +1,7 @@
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {useCallback} from "react"
 import { useCart } from "../context/cartContext";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
@@ -322,6 +321,14 @@ export default function Slider() {
 
   const intervalRef = useRef(null);
 
+  // ================= CURRENT USER =================
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const userId = currentUser?._id || currentUser?.id;
+
+  // ================= FETCH HERO PRODUCTS =================
   useEffect(() => {
     const fetchHero = async () => {
       try {
@@ -331,14 +338,14 @@ export default function Slider() {
 
         setSlides(res.data.slice(0, 5));
       } catch (err) {
-        console.log(err);
+        console.error("Hero products error:", err);
       }
     };
 
     fetchHero();
   }, []);
 
-  
+  // ================= AUTO SLIDER =================
 
   const stopAuto = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -355,9 +362,14 @@ export default function Slider() {
   }, [slides.length]);
 
   useEffect(() => {
-  startAuto();
-  return () => clearInterval(intervalRef.current);
-}, [startAuto]);
+    startAuto();
+
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [startAuto]);
+
+  // ================= NEXT =================
 
   const next = () => {
     stopAuto();
@@ -366,6 +378,8 @@ export default function Slider() {
 
     setTimeout(startAuto, 200);
   };
+
+  // ================= PREVIOUS =================
 
   const prev = () => {
     stopAuto();
@@ -377,7 +391,43 @@ export default function Slider() {
     setTimeout(startAuto, 200);
   };
 
-  if (!slides.length) {
+  // ================= ADD TO CART =================
+
+  const addToCart = async (e, productId) => {
+    e.stopPropagation();
+
+    // User must be logged in
+    if (!currentUser || !userId) {
+      alert("Please sign in to add items to your cart.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "https://amazon-7t4h.onrender.com/api/cart",
+        {
+          userId,
+          productId,
+        }
+      );
+
+      // Refresh global cart
+      await fetchCart();
+
+      console.log("Slider item added:", res.data);
+
+      alert("Added to Cart 🛒");
+    } catch (err) {
+      console.error("Slider Add to Cart error:", err);
+
+      alert("Failed to add item to cart");
+    }
+  };
+
+  // ================= LOADING =================
+
+     if (!slides.length) {
     return (
       <Container>
         <div
@@ -393,6 +443,8 @@ export default function Slider() {
     );
   }
 
+  // ================= UI =================
+
   return (
     <Container
       onMouseEnter={stopAuto}
@@ -405,10 +457,9 @@ export default function Slider() {
       <Wrapper $index={index}>
         {slides.map((item) => (
           <Slide key={item._id}>
-            {/* LEFT SIDE IMAGE */}
-
             <ImgContainer>
               <Circle />
+
               <Image
                 src={
                   item.img && item.img.trim() !== ""
@@ -419,13 +470,13 @@ export default function Slider() {
               />
             </ImgContainer>
 
-            {/* RIGHT SIDE CONTENT */}
-
             <Content>
               <Badge>Limited Time Deal</Badge>
 
               <Title
-                onClick={() => navigate(`/product/${item._id}`)}
+                onClick={() =>
+                  navigate(`/product/${item._id}`)
+                }
                 style={{ cursor: "pointer" }}
               >
                 {item.title}
@@ -454,42 +505,26 @@ export default function Slider() {
 
               <FeatureRow>
                 <span>✓ Free Delivery</span>
-
                 <span>✓ Easy Returns</span>
-
                 <span>✓ Cash on Delivery</span>
               </FeatureRow>
 
               <ButtonRow>
-                    <CartButton
-                      onClick={async (e) => {
-                        e.stopPropagation();
+                <CartButton
+                  onClick={(e) =>
+                    addToCart(e, item._id)
+                  }
+                >
+                  Add to Cart
+                </CartButton>
 
-                        try {
-                          await axios.post(
-                            "https://amazon-7t4h.onrender.com/api/cart",
-                            {
-                              userId: "demo-user",
-                              productId: item._id,
-                            }
-                          );
-
-                          await fetchCart();
-
-                          alert("Added to Cart");
-                        } catch (err) {
-                          console.error(err);
-                        }
-                      }}
-                    >
-                    Add to Cart
-                    </CartButton>
-
-                  <BuyButton
-                    onClick={() => navigate(`/product/${item._id}`)}
-                  >
-                    View Details
-                  </BuyButton>
+                <BuyButton
+                  onClick={() =>
+                    navigate(`/product/${item._id}`)
+                  }
+                >
+                  View Details
+                </BuyButton>
               </ButtonRow>
             </Content>
           </Slide>

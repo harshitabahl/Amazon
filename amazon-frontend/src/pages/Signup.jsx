@@ -38,6 +38,10 @@ const Signup = () => {
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("token", res.data.token);
 
+      window.dispatchEvent(new Event("authChange"));
+
+navigate("/");
+
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");

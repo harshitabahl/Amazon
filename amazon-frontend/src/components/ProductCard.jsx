@@ -7,10 +7,18 @@ import { useCart } from "../context/cartContext";
 function ProductCard({ product }) {
   const navigate = useNavigate();
   const { fetchCart } = useCart();
+
   const price = Number(product?.price) || 299;
 
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const userId = currentUser?._id || currentUser?.id;
+
   const reviews =
-    100 + (parseInt(product?._id?.slice(-2), 16) % 400 || 0);
+    100 +
+    (parseInt(product?._id?.slice(-2), 16) % 400 || 0);
 
   const rating = (4 + (price % 10) / 10).toFixed(1);
 
@@ -24,11 +32,17 @@ function ProductCard({ product }) {
     const img = product?.img;
     const title = product?.title || "";
 
-    if (typeof img === "string" && img.startsWith("http")) {
+    if (
+      typeof img === "string" &&
+      img.startsWith("http")
+    ) {
       return img;
     }
 
-    if (typeof img === "string" && img.startsWith("/uploads")) {
+    if (
+      typeof img === "string" &&
+      img.startsWith("/uploads")
+    ) {
       return `https://amazon-7t4h.onrender.com${img}`;
     }
 
@@ -38,20 +52,28 @@ function ProductCard({ product }) {
   const addToCart = async (e) => {
     e.stopPropagation();
 
+    // User must be logged in
+    if (!currentUser || !userId) {
+      alert("Please sign in to add items to your cart.");
+      navigate("/login");
+      return;
+    }
+
     try {
       const res = await axios.post(
         "https://amazon-7t4h.onrender.com/api/cart",
         {
-          userId: "demo-user",
+          userId,
           productId: product._id,
         }
       );
 
-      await fetchCart();      // 👈 Refresh shared cart
+      // Refresh shared cart
+      await fetchCart();
 
-      console.log(res.data);
+      console.log("Added to cart:", res.data);
     } catch (err) {
-      console.error(err);
+      console.error("Add to cart error:", err);
       alert("Failed to add to cart");
     }
   };
@@ -59,12 +81,13 @@ function ProductCard({ product }) {
   return (
     <div
       className="card"
-      onClick={() => navigate(`/product/${product._id}`)}
+      onClick={() =>
+        navigate(`/product/${product._id}`)
+      }
     >
       {/* Product Image */}
 
       <div className="image-container">
-
         <button
           className="wishlist-btn"
           aria-label="Add to Wishlist"
@@ -80,9 +103,8 @@ function ProductCard({ product }) {
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = getPlaceholderImage(
-              product?.title || ""
-            );
+            e.currentTarget.src =
+              getPlaceholderImage(product?.title || "");
           }}
         />
       </div>
@@ -90,7 +112,6 @@ function ProductCard({ product }) {
       {/* Product Details */}
 
       <div className="card-content">
-
         <div className="brand">
           {product.brand || "Amazon Brand"}
         </div>
@@ -105,7 +126,6 @@ function ProductCard({ product }) {
         {/* Rating */}
 
         <div className="rating">
-
           <span className="rating-stars">
             {rating} ★
           </span>
@@ -113,13 +133,11 @@ function ProductCard({ product }) {
           <span className="rating-count">
             ({reviews.toLocaleString()})
           </span>
-
         </div>
 
         {/* Price */}
 
         <div className="price-row">
-
           <span className="price">
             ₹{price}
           </span>
@@ -131,7 +149,6 @@ function ProductCard({ product }) {
           <span className="discount-text">
             {discount}% off
           </span>
-
         </div>
 
         {/* Delivery */}
@@ -144,7 +161,7 @@ function ProductCard({ product }) {
           ✔ Prime
         </div>
 
-        {/* Button */}
+        {/* Add to Cart */}
 
         <button
           className="add-cart-btn"
@@ -152,7 +169,6 @@ function ProductCard({ product }) {
         >
           Add to Cart
         </button>
-
       </div>
     </div>
   );

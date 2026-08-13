@@ -7,59 +7,73 @@ import { useCart } from "../context/cartContext";
 function Cart() {
   const { cart, fetchCart } = useCart();
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const userId = currentUser?._id || currentUser?.id;
 
   useEffect(() => {
     const loadCart = async () => {
       try {
-        await fetchCart();
+        if (userId) {
+          await fetchCart();
+        }
       } finally {
         setLoading(false);
       }
     };
 
     loadCart();
-  }, [fetchCart]);
+  }, [userId, fetchCart]);
 
   const increaseQuantity = async (productId) => {
+    if (!userId) return;
+
     try {
       await axios.patch(
         "https://amazon-7t4h.onrender.com/api/cart/increase",
         {
-          userId: "demo-user",
+          userId,
           productId,
         }
       );
 
       await fetchCart();
     } catch (err) {
-      console.error(err);
+      console.error("Increase quantity error:", err);
     }
   };
 
   const decreaseQuantity = async (productId) => {
+    if (!userId) return;
+
     try {
       await axios.patch(
         "https://amazon-7t4h.onrender.com/api/cart/decrease",
         {
-          userId: "demo-user",
+          userId,
           productId,
         }
       );
 
       await fetchCart();
     } catch (err) {
-      console.error(err);
+      console.error("Decrease quantity error:", err);
     }
   };
 
   const removeItem = async (productId) => {
+    if (!userId) return;
+
     try {
       await axios.delete(
         "https://amazon-7t4h.onrender.com/api/cart/remove",
         {
           data: {
-            userId: "demo-user",
+            userId,
             productId,
           },
         }
@@ -67,18 +81,21 @@ function Cart() {
 
       await fetchCart();
     } catch (err) {
-      console.error(err);
+      console.error("Remove item error:", err);
     }
   };
 
-  if (loading) return <h2>Loading Cart...</h2>;
+  if (loading) {
+    return <h2>Loading Cart...</h2>;
+  }
 
-  if (!cart || cart.items.length === 0) {
+  if (!currentUser || !cart || cart.items.length === 0) {
     return <h2>Your Cart is Empty 🛒</h2>;
   }
 
   const subtotal = cart.items.reduce(
-    (total, item) => total + item.productId.price * item.quantity,
+    (total, item) =>
+      total + item.productId.price * item.quantity,
     0
   );
 
@@ -171,8 +188,11 @@ function Cart() {
           <span>₹{subtotal}</span>
         </div>
 
-        <button className="checkout-btn" onClick={() => navigate("/checkout")}>
-            Proceed to Checkout
+        <button
+          className="checkout-btn"
+          onClick={() => navigate("/checkout")}
+        >
+          Proceed to Checkout
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 
-const Login = ({ setUser }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -12,36 +12,41 @@ const Login = ({ setUser }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
-      // 1. login (sets cookie)
-      await axios.post(
+      // LOGIN
+      const res = await axios.post(
         "https://amazon-7t4h.onrender.com/api/auth/login",
-        { email, password },
-        { withCredentials: true }
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
       );
 
-      // 2. fetch user (/me)
-      const res = await axios.get(
-        "https://amazon-7t4h.onrender.com/api/auth/me",
-        { withCredentials: true }
-      );
+      console.log("LOGIN RESPONSE:", res.data);
 
+      // Get user from login response
+      const user = res.data.user;
 
-
-      // 3. save user in localStorage
-        localStorage.setItem(
+      // Save logged-in user
+      localStorage.setItem(
         "user",
-        JSON.stringify(res.data)
-        );
+        JSON.stringify(user)
+      );
 
-        // 4. update state
-        setUser(res.data);
-
-        // 5. redirect home
-        window.location.href = "/";
+      // Reload app so Navbar gets the updated user
+      window.location.href = "/";
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      console.error("Login error:", err);
+
+      setError(
+        err.response?.data?.message ||
+          "Login failed"
+      );
     }
   };
 
@@ -53,9 +58,12 @@ const Login = ({ setUser }) => {
         <form onSubmit={handleLogin}>
           <input
             className="auth-input"
-            type="text"
+            type="email"
             placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
             required
           />
 
@@ -63,13 +71,25 @@ const Login = ({ setUser }) => {
             className="auth-input"
             type="password"
             placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             required
           />
 
-          {error && <p className="auth-error">{error}</p>}
+          {error && (
+            <p className="auth-error">
+              {error}
+            </p>
+          )}
 
-          <p style={{ fontSize: "13px", marginTop: "10px" }}>
+          <p
+            style={{
+              fontSize: "13px",
+              marginTop: "10px",
+            }}
+          >
             Don’t have an account?{" "}
             <span
               style={{
@@ -77,13 +97,16 @@ const Login = ({ setUser }) => {
                 cursor: "pointer",
                 textDecoration: "underline",
               }}
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/signup")}
             >
               Sign up
             </span>
           </p>
 
-          <button className="auth-button" type="submit">
+          <button
+            className="auth-button"
+            type="submit"
+          >
             Login
           </button>
         </form>

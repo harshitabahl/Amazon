@@ -13,14 +13,34 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
 
   const fetchCart = useCallback(async () => {
+    const currentUser = JSON.parse(
+      localStorage.getItem("user") || "null"
+    );
+
+    const userId = currentUser?._id || currentUser?.id;
+
+    // No logged-in user = empty cart
+    if (!userId) {
+      setCart({
+        userId: null,
+        items: [],
+      });
+      return;
+    }
+
     try {
       const res = await axios.get(
-        "https://amazon-7t4h.onrender.com/api/cart/demo-user"
+        `https://amazon-7t4h.onrender.com/api/cart/${userId}`
       );
 
       setCart(res.data);
     } catch (err) {
       console.error("Cart fetch error:", err);
+
+      setCart({
+        userId,
+        items: [],
+      });
     }
   }, []);
 
@@ -33,10 +53,6 @@ export const CartProvider = ({ children }) => {
       (sum, item) => sum + item.quantity,
       0
     ) || 0;
-
-  console.log("Cart updated:", cart);
-  console.log("Quantity:", quantity);
-  console.log("CartProvider Render");
 
   return (
     <CartContext.Provider

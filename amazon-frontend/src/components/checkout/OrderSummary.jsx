@@ -6,10 +6,19 @@ const OrderSummary = () => {
   const { cart, fetchCart } = useCart();
   const navigate = useNavigate();
 
-  if (!cart || cart.items.length === 0) return null;
+  const currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const userId = currentUser?._id || currentUser?.id;
+
+  if (!cart || cart.items.length === 0) {
+    return null;
+  }
 
   const subtotal = cart.items.reduce(
-    (sum, item) => sum + item.productId.price * item.quantity,
+    (sum, item) =>
+      sum + item.productId.price * item.quantity,
     0
   );
 
@@ -22,45 +31,59 @@ const OrderSummary = () => {
   const total = subtotal + shipping;
 
   const placeOrder = async () => {
-  try {
-    console.log("1. Creating order...");
+    if (!userId) {
+      alert("Please login before placing your order.");
+      navigate("/login");
+      return;
+    }
 
-    const res = await axios.post(
-      "https://amazon-7t4h.onrender.com/api/orders",
-      {
-        userId: "demo-user",
-      }
-    );
+    try {
+      // 1. Create order
+      console.log("1. Creating order...");
 
-    console.log("✅ Order created");
+      const orderResponse = await axios.post(
+        "https://amazon-7t4h.onrender.com/api/orders",
+        {
+          userId,
+        }
+      );
 
-    console.log("2. Clearing cart...");
+      console.log("✅ Order created:", orderResponse.data);
 
-    const clearRes = await axios.delete(
-      "https://amazon-7t4h.onrender.com/api/cart/clear/demo-user"
-    );
+      // 2. Clear cart
+      console.log("2. Clearing cart...");
 
-    console.log("✅ Cart cleared", clearRes.data);
+      const clearResponse = await axios.delete(
+        `https://amazon-7t4h.onrender.com/api/cart/clear/${userId}`
+      );
 
-    console.log("3. Fetching cart...");
+      console.log("✅ Cart cleared:", clearResponse.data);
 
-    await fetchCart();
+      // 3. Refresh cart context
+      console.log("3. Refreshing cart...");
 
-    console.log("✅ Cart fetched");
+      await fetchCart();
 
-    navigate("/order-success", {
-      state: {
-        order: res.data,
-      },
-    });
-  } catch (err) {
-  console.log("FULL ERROR:", err);
-  console.log("STATUS:", err.response?.status);
-  console.log("DATA:", err.response?.data);
+      console.log("✅ Cart refreshed");
 
-  alert("Failed to place order");
-  }
-};
+      // 4. Go to success page
+      navigate("/order-success", {
+        state: {
+          order: orderResponse.data,
+        },
+      });
+    } catch (err) {
+      console.error("❌ Order error:", err);
+      console.error("Status:", err.response?.status);
+      console.error("Response:", err.response?.data);
+
+      alert(
+        err.response?.data?.message ||
+          "Failed to place order. Please try again."
+      );
+    }
+  };
+
   return (
     <div className="checkout-card">
       <h2>Order Summary</h2>

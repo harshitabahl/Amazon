@@ -131,38 +131,41 @@ const MenuItem = styled.div`
     font-size: 12px;
   `}
 `;
+
 const HideOnMobile = styled.div`
   ${mobile`
     display: none;
   `}
 `;
 
-
 const Navbar = () => {
-  const { quantity } = useCart();
-  console.log("NAVBAR RENDER");
-console.log("Navbar quantity:", quantity);
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
   );
 
-  const navigate = useNavigate();
-  const handleSearch = () => {
-  if (!search.trim()) return;
+  const { quantity } = useCart();
 
-  navigate(`/products?search=${encodeURIComponent(search.trim())}`);
-};
+  const cartQuantity = currentUser ? quantity : 0;
+
+  const handleSearch = () => {
+    if (!search.trim()) return;
+
+    navigate(
+      `/products?search=${encodeURIComponent(search.trim())}`
+    );
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
 
-    navigate("/");
+  window.dispatchEvent(new Event("authChange"));
 
-    window.location.reload();
-  };
+  navigate("/");
+};
 
   return (
     <Container>
@@ -187,6 +190,7 @@ console.log("Navbar quantity:", quantity);
                 }
               }}
             />
+
             <SearchButton onClick={handleSearch}>
               <SearchIcon />
             </SearchButton>
@@ -194,7 +198,7 @@ console.log("Navbar quantity:", quantity);
         </Center>
 
         {/* RIGHT */}
-          <Right>
+        <Right>
           {!currentUser ? (
             <>
               <MenuItem>
@@ -228,7 +232,7 @@ console.log("Navbar quantity:", quantity);
               >
                 CART
                 <Badge
-                 badgeContent={quantity}
+                  badgeContent={cartQuantity}
                   color="primary"
                 >
                   <ShoppingCartOutlined />
