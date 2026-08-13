@@ -213,5 +213,4 @@ router.delete("/clear/:userId", async (req, res) => {
     });
   }
 });
-
 module.exports = router;

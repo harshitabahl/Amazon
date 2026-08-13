@@ -3,6 +3,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+
 const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
 const filterRoute = require("./routes/filter");
@@ -14,13 +15,16 @@ require("dotenv").config();
 
 const app = express();
 
-/* Serve product images */
+// ================= PRODUCT IMAGES =================
+
 app.use(
   "/product-images",
   express.static(
     path.join(__dirname, "public/product-images")
   )
 );
+
+// ================= CORS =================
 
 app.use(
   cors({
@@ -34,15 +38,25 @@ app.use(
       "DELETE",
       "OPTIONS",
     ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
+// ================= MIDDLEWARE =================
+
+app.use(express.json());
+app.use(cookieParser());
+
+// ================= HOME =================
 
 app.get("/", (req, res) => {
   res.send("Backend working");
 });
 
-app.use(express.json());
-app.use(cookieParser());
+// ================= ROUTES =================
 
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
@@ -51,11 +65,21 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/address", addressRoute);
 app.use("/api/orders", orderRoute);
 
+// ================= DATABASE =================
+
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.log("❌ Mongo Error:", err.message));
+  .then(() => {
+    console.log("✅ MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log("❌ Mongo Error:", err.message);
+  });
 
-app.listen(5001, () => {
-  console.log("Server running on port 5001");
+// ================= SERVER =================
+
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
