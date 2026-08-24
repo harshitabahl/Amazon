@@ -478,50 +478,38 @@ export default function Slider() {
 
   /* ================= FETCH HERO ================= */
 
- useEffect(() => {
-  let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-  const fetchHero = async () => {
-    try {
-      const res = await axios.get(HERO_API);
+    const fetchHero = async () => {
+      try {
+        const res = await axios.get(HERO_API);
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      const heroSlides =
-        Array.isArray(res.data)
-          ? res.data.slice(0, 5)
-          : [];
+        const heroSlides =
+          Array.isArray(res.data)
+            ? res.data.slice(0, 5)
+            : [];
 
-      const firstImage = heroSlides[0]?.img;
-
-      if (firstImage) {
-        const preload = document.createElement("link");
-
-        preload.rel = "preload";
-        preload.as = "image";
-        preload.href = firstImage;
-        preload.fetchPriority = "high";
-
-        document.head.appendChild(preload);
+        setSlides(heroSlides);
+      } catch (err) {
+        if (!cancelled) {
+          console.error(
+            "Hero products error:",
+            err
+          );
+        }
       }
+    };
 
-      setSlides(heroSlides);
-    } catch (err) {
-      if (!cancelled) {
-        console.error(
-          "Hero products error:",
-          err
-        );
-      }
-    }
-  };
+    fetchHero();
 
-  fetchHero();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  return () => {
-    cancelled = true;
-  };
-}, []);
   /* ================= AUTO SLIDER ================= */
 
   const stopAuto = useCallback(() => {
