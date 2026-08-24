@@ -177,10 +177,11 @@ function Products() {
         ) : (
           <section className="products-grid">
             <div className="grid">
-              {products.map((product) => (
+              {products.map((product, index) => (
                 <ProductCard
                   key={product._id}
                   product={product}
+                  isPriority={index < 5}
                 />
               ))}
             </div>

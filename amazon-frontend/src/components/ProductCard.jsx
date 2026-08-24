@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 import { useCart } from "../context/cartContext";
 
-function ProductCard({ product }) {
+function ProductCard({ product, isPriority = false }) {
   const navigate = useNavigate();
   const { fetchCart } = useCart();
 
@@ -52,7 +52,6 @@ function ProductCard({ product }) {
   const addToCart = async (e) => {
     e.stopPropagation();
 
-    // User must be logged in
     if (!currentUser || !userId) {
       alert("Please sign in to add items to your cart.");
       navigate("/login");
@@ -68,7 +67,6 @@ function ProductCard({ product }) {
         }
       );
 
-      // Refresh shared cart
       await fetchCart();
 
       console.log("Added to cart:", res.data);
@@ -85,8 +83,6 @@ function ProductCard({ product }) {
         navigate(`/product/${product._id}`)
       }
     >
-      {/* Product Image */}
-
       <div className="image-container">
         <button
           className="wishlist-btn"
@@ -99,17 +95,20 @@ function ProductCard({ product }) {
         <img
           className="product-image"
           src={getImage()}
-          alt={product?.title}
-          loading="lazy"
+          alt={product?.title || "Product"}
+          width={420}
+          height={420}
+          loading={isPriority ? "eager" : "lazy"}
+          fetchPriority={isPriority ? "high" : "auto"}
+          decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src =
-              getPlaceholderImage(product?.title || "");
+            e.currentTarget.src = getPlaceholderImage(
+              product?.title || ""
+            );
           }}
         />
       </div>
-
-      {/* Product Details */}
 
       <div className="card-content">
         <div className="brand">
@@ -123,8 +122,6 @@ function ProductCard({ product }) {
           {product?.title}
         </h3>
 
-        {/* Rating */}
-
         <div className="rating">
           <span className="rating-stars">
             {rating} ★
@@ -134,8 +131,6 @@ function ProductCard({ product }) {
             ({reviews.toLocaleString()})
           </span>
         </div>
-
-        {/* Price */}
 
         <div className="price-row">
           <span className="price">
@@ -151,8 +146,6 @@ function ProductCard({ product }) {
           </span>
         </div>
 
-        {/* Delivery */}
-
         <div className="delivery">
           <strong>FREE Delivery</strong> Tomorrow
         </div>
@@ -160,8 +153,6 @@ function ProductCard({ product }) {
         <div className="prime">
           ✔ Prime
         </div>
-
-        {/* Add to Cart */}
 
         <button
           className="add-cart-btn"
