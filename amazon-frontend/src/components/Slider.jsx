@@ -505,22 +505,19 @@ export default function Slider() {
 
   /* ================= FETCH HERO PRODUCTS ================= */
 
+  const HERO_API =
+    "https://amazon-7t4h.onrender.com/api/products/hero";
+
   useEffect(() => {
     let cancelled = false;
 
     const fetchHero = async () => {
       try {
-        const res = await axios.get(
-          "https://amazon-7t4h.onrender.com/api/products/hero"
-        );
+        const res = await axios.get(HERO_API);
 
         if (cancelled) return;
 
-        // Only keep the 5 products actually used by slider
-        const heroSlides = res.data.slice(0, 5);
-
-        setSlides(heroSlides);
-
+        setSlides(res.data.slice(0, 5));
       } catch (err) {
         if (!cancelled) {
           console.error("Hero products error:", err);
@@ -534,6 +531,7 @@ export default function Slider() {
       cancelled = true;
     };
   }, []);
+
 
   /* ================= AUTO SLIDER ================= */
 
@@ -662,25 +660,14 @@ export default function Slider() {
                 <Circle />
 
                 <Image
-                  width="420"
-                  height="420"
-                  src={imageSrc}
-                  alt={item.title}
-                  
-                  /* PERFORMANCE:
-                      First slide is the initial LCP candidate.
-                  */
-                  loading={
-                    slideIndex === 0 ? "eager" : "lazy"
-                  }
-                  fetchPriority={
-                    slideIndex === 0 ? "high" : "low"
-                  }
-
-                  decoding={
-                    slideIndex === 0 ? "sync" : "async"
-                  }
-                />
+                width="420"
+                height="420"
+                src={imageSrc}
+                alt={item.title}
+                loading={slideIndex === 0 ? "eager" : "lazy"}
+                fetchPriority={slideIndex === 0 ? "high" : "low"}
+                decoding="async"
+              />
               </ImgContainer>
 
               {/* CONTENT */}
