@@ -5,6 +5,42 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cartContext";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
+/* =========================================================
+   IMPORTANT LCP PRELOAD
+   ========================================================= */
+
+/*
+ * This is the current first hero image returned by your
+ * /api/products/hero endpoint.
+ *
+ * We preload it immediately instead of waiting for the
+ * Hero API response.
+ */
+const FIRST_HERO_IMAGE =
+  "https://g.sdlcdn.com/imgs/l/d/i/Nexra-Creation-Cotton-Blend-Regular-SDL820192292-1-00da6.jpg?w=220&h=258&sharp=7";
+
+/*
+ * Add preload only once.
+ *
+ * This runs as soon as this module is evaluated,
+ * instead of waiting for useEffect + API response.
+ */
+if (
+  typeof document !== "undefined" &&
+  !document.querySelector(
+    `link[rel="preload"][href="${FIRST_HERO_IMAGE}"]`
+  )
+) {
+  const preload = document.createElement("link");
+
+  preload.rel = "preload";
+  preload.as = "image";
+  preload.href = FIRST_HERO_IMAGE;
+  preload.fetchPriority = "high";
+
+  document.head.appendChild(preload);
+}
+
 /* ================= CONTAINER ================= */
 
 export const Container = styled.div`
@@ -12,7 +48,12 @@ export const Container = styled.div`
   height: 560px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #f7f9fc 0%, #edf2f7 100%);
+
+  background: linear-gradient(
+    135deg,
+    #f7f9fc 0%,
+    #edf2f7 100%
+  );
 
   @media (max-width: 1024px) {
     height: 520px;
@@ -30,8 +71,15 @@ export const Container = styled.div`
 export const Wrapper = styled.div`
   display: flex;
   height: 100%;
-  transform: translate3d(${({ $index }) => $index * -100}%, 0, 0);
+
+  transform: translate3d(
+    ${({ $index }) => $index * -100}%,
+    0,
+    0
+  );
+
   transition: transform 0.8s ease;
+
   will-change: transform;
 `;
 
@@ -75,7 +123,6 @@ export const ImgContainer = styled.div`
   align-items: center;
 
   position: relative;
-
   min-width: 0;
 
   @media (max-width: 768px) {
@@ -91,11 +138,16 @@ export const Circle = styled.div`
 
   border-radius: 50%;
 
-  background: linear-gradient(135deg, #ffffff, #e9edf3);
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #e9edf3
+  );
 
   position: absolute;
 
-  box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 50px
+    rgba(255, 255, 255, 0.7);
 
   @media (max-width: 1024px) {
     width: 360px;
@@ -108,6 +160,11 @@ export const Circle = styled.div`
   }
 `;
 
+/*
+ * Removed CSS filter from the LCP image.
+ *
+ * drop-shadow can add extra paint/compositing work.
+ */
 export const Image = styled.img`
   position: relative;
   z-index: 2;
@@ -119,12 +176,9 @@ export const Image = styled.img`
 
   object-fit: contain;
 
-  filter: drop-shadow(0 18px 35px rgba(0, 0, 0, 0.18));
-
   @media (max-width: 768px) {
     width: 220px;
     max-width: 220px;
-
     height: 220px;
   }
 `;
@@ -156,7 +210,6 @@ export const Content = styled.div`
     box-sizing: border-box;
 
     text-align: center;
-
     align-items: center;
 
     gap: 12px;
@@ -415,7 +468,6 @@ export const BuyButton = styled.button`
 
 export const Arrow = styled.div`
   width: 60px;
-
   height: 60px;
 
   border-radius: 50%;
@@ -431,7 +483,6 @@ export const Arrow = styled.div`
   display: flex;
 
   justify-content: center;
-
   align-items: center;
 
   font-size: 30px;
@@ -440,26 +491,32 @@ export const Arrow = styled.div`
 
   z-index: 20;
 
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 25px
+    rgba(0, 0, 0, 0.15);
 
-  left: ${(props) => props.left && "25px"};
+  left: ${(props) =>
+    props.left && "25px"};
 
-  right: ${(props) => props.right && "25px"};
+  right: ${(props) =>
+    props.right && "25px"};
 
   @media (max-width: 768px) {
     width: 42px;
-
     height: 42px;
 
     font-size: 20px;
 
-    left: ${(props) => props.left && "8px"};
+    left: ${(props) =>
+      props.left && "8px"};
 
-    right: ${(props) => props.right && "8px"};
+    right: ${(props) =>
+      props.right && "8px"};
   }
 `;
 
-/* ================= SLIDER ================= */
+/* =========================================================
+   SLIDER
+   ========================================================= */
 
 export default function Slider() {
   const [slides, setSlides] = useState([]);
@@ -470,8 +527,6 @@ export default function Slider() {
 
   const intervalRef = useRef(null);
 
-  /* ================= HERO API ================= */
-
   const HERO_API =
     "https://amazon-7t4h.onrender.com/api/products/hero";
 
@@ -481,7 +536,9 @@ export default function Slider() {
     localStorage.getItem("user") || "null"
   );
 
-  const userId = currentUser?._id || currentUser?.id;
+  const userId =
+    currentUser?._id ||
+    currentUser?.id;
 
   /* ================= FETCH HERO ================= */
 
@@ -490,18 +547,24 @@ export default function Slider() {
 
     const fetchHero = async () => {
       try {
-        const res = await axios.get(HERO_API);
+        const res = await axios.get(
+          HERO_API
+        );
 
         if (cancelled) return;
 
-        const heroSlides = Array.isArray(res.data)
-          ? res.data.slice(0, 5)
-          : [];
+        const heroSlides =
+          Array.isArray(res.data)
+            ? res.data.slice(0, 5)
+            : [];
 
         setSlides(heroSlides);
       } catch (err) {
         if (!cancelled) {
-          console.error("Hero products error:", err);
+          console.error(
+            "Hero products error:",
+            err
+          );
         }
       }
     };
@@ -513,27 +576,69 @@ export default function Slider() {
     };
   }, []);
 
+  /* =========================================================
+     PRELOAD REMAINING SLIDES
+     ========================================================= */
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+
+    /*
+     * Don't preload immediately.
+     *
+     * The first image has priority.
+     * Other images are only prepared after
+     * the initial page has had time to render.
+     */
+    const timer = setTimeout(() => {
+      slides
+        .slice(1)
+        .forEach((slide) => {
+          if (!slide.img) return;
+
+          const img =
+            new window.Image();
+
+          img.src = slide.img;
+        });
+    }, 1500);
+
+    return () =>
+      clearTimeout(timer);
+  }, [slides]);
+
   /* ================= AUTO SLIDER ================= */
 
   const stopAuto = useCallback(() => {
-    clearInterval(intervalRef.current);
+    clearInterval(
+      intervalRef.current
+    );
   }, []);
 
   const startAuto = useCallback(() => {
     if (slides.length <= 1) return;
 
-    clearInterval(intervalRef.current);
+    clearInterval(
+      intervalRef.current
+    );
 
-    intervalRef.current = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    intervalRef.current =
+      setInterval(() => {
+        setIndex(
+          (prev) =>
+            (prev + 1) %
+            slides.length
+        );
+      }, 4000);
   }, [slides.length]);
 
   useEffect(() => {
     startAuto();
 
     return () => {
-      clearInterval(intervalRef.current);
+      clearInterval(
+        intervalRef.current
+      );
     };
   }, [startAuto]);
 
@@ -544,9 +649,16 @@ export default function Slider() {
 
     stopAuto();
 
-    setIndex((prev) => (prev + 1) % slides.length);
+    setIndex(
+      (prev) =>
+        (prev + 1) %
+        slides.length
+    );
 
-    setTimeout(startAuto, 200);
+    setTimeout(
+      startAuto,
+      200
+    );
   };
 
   /* ================= PREVIOUS ================= */
@@ -557,41 +669,67 @@ export default function Slider() {
     stopAuto();
 
     setIndex((prev) =>
-      prev === 0 ? slides.length - 1 : prev - 1
+      prev === 0
+        ? slides.length - 1
+        : prev - 1
     );
 
-    setTimeout(startAuto, 200);
+    setTimeout(
+      startAuto,
+      200
+    );
   };
 
   /* ================= ADD TO CART ================= */
 
-  const addToCart = async (e, productId) => {
+  const addToCart = async (
+    e,
+    productId
+  ) => {
     e.stopPropagation();
 
-    if (!currentUser || !userId) {
-      alert("Please sign in to add items to your cart.");
+    if (
+      !currentUser ||
+      !userId
+    ) {
+      alert(
+        "Please sign in to add items to your cart."
+      );
+
       navigate("/login");
+
       return;
     }
 
     try {
-      const res = await axios.post(
-        "https://amazon-7t4h.onrender.com/api/cart",
-        {
-          userId,
-          productId,
-        }
-      );
+      const res =
+        await axios.post(
+          "https://amazon-7t4h.onrender.com/api/cart",
+          {
+            userId,
+            productId,
+          }
+        );
 
       await fetchCart();
 
-      console.log("Slider item added:", res.data);
+      console.log(
+        "Slider item added:",
+        res.data
+      );
 
-      alert("Added to Cart 🛒");
+      alert(
+        "Added to Cart 🛒"
+      );
     } catch (err) {
-      console.error("Slider Add to Cart error:", err);
+      console.error(
+        "Slider Add to Cart error:",
+        err
+      );
 
-      alert("Failed to add item to cart");
+      alert(
+        "Failed to add item to cart"
+      );
     }
   };
 
@@ -613,6 +751,19 @@ export default function Slider() {
     );
   }
 
+  /* ================= CURRENT SLIDE ================= */
+
+  const currentSlide =
+    slides[index];
+
+  const imageSrc =
+    currentSlide?.img &&
+    currentSlide.img.trim()
+      ? currentSlide.img
+      : getPlaceholderImage(
+          currentSlide?.title
+        );
+
   /* ================= UI ================= */
 
   return (
@@ -620,133 +771,133 @@ export default function Slider() {
       onMouseEnter={stopAuto}
       onMouseLeave={startAuto}
     >
-      <Arrow left onClick={prev}>
+      <Arrow
+        left
+        onClick={prev}
+      >
         ❮
       </Arrow>
 
       <Wrapper $index={index}>
-        {slides.map((item, slideIndex) => {
-          const imageSrc =
-            item.img && item.img.trim()
-              ? item.img
-              : getPlaceholderImage(item.title);
+        {/* =================================================
+            ONLY RENDER CURRENT SLIDE
 
-          return (
-            <Slide key={item._id}>
-              <ImgContainer>
-                <Circle />
+            This is important for initial rendering.
+            ================================================= */}
 
-                <Image
-                  width={420}
-                  height={420}
-                  src={imageSrc}
-                  alt={item.title || "Product"}
-                  loading={
-                    slideIndex === 0
-                      ? "eager"
-                      : "lazy"
-                  }
-                  fetchPriority={
-                    slideIndex === 0
-                      ? "high"
-                      : "low"
-                  }
-                  decoding={
-                    slideIndex === 0
-                      ? "sync"
-                      : "async"
-                  }
-                />
-              </ImgContainer>
+        <Slide>
+          <ImgContainer>
+            <Circle />
 
-              <Content>
-                <Badge>
-                  Limited Time Deal
-                </Badge>
+            <Image
+              width={420}
+              height={420}
+              src={imageSrc}
+              alt={
+                currentSlide.title ||
+                "Product"
+              }
 
-                <Title
-                  onClick={() =>
-                    navigate(`/product/${item._id}`)
-                  }
-                  style={{
-                    cursor: "pointer",
-                  }}
-                >
-                  {item.title}
-                </Title>
+              /*
+               * LCP IMAGE
+               */
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </ImgContainer>
 
-                <Rating>
-                  ⭐⭐⭐⭐⭐{" "}
-                  <span
-                    style={{
-                      color: "#007185",
-                    }}
-                  >
-                    4.5 (128 Reviews)
-                  </span>
-                </Rating>
+          <Content>
+            <Badge>
+              Limited Time Deal
+            </Badge>
 
-                <PriceRow>
-                  <Price>
-                    ₹{item.price}
-                  </Price>
+            <Title
+              onClick={() =>
+                navigate(
+                  `/product/${currentSlide._id}`
+                )
+              }
+              style={{
+                cursor: "pointer",
+              }}
+            >
+              {currentSlide.title}
+            </Title>
 
-                  <OldPrice>
-                    ₹999
-                  </OldPrice>
+            <Rating>
+              ⭐⭐⭐⭐⭐{" "}
+              <span
+                style={{
+                  color: "#007185",
+                }}
+              >
+                4.5 (128 Reviews)
+              </span>
+            </Rating>
 
-                  <Discount>
-                    60% OFF
-                  </Discount>
-                </PriceRow>
+            <PriceRow>
+              <Price>
+                ₹{currentSlide.price}
+              </Price>
 
-                <Desc>
-                  {item.desc}
-                </Desc>
+              <OldPrice>
+                ₹999
+              </OldPrice>
 
-                <FeatureRow>
-                  <span>
-                    ✓ Free Delivery
-                  </span>
+              <Discount>
+                60% OFF
+              </Discount>
+            </PriceRow>
 
-                  <span>
-                    ✓ Easy Returns
-                  </span>
+            <Desc>
+              {currentSlide.desc}
+            </Desc>
 
-                  <span>
-                    ✓ Cash on Delivery
-                  </span>
-                </FeatureRow>
+            <FeatureRow>
+              <span>
+                ✓ Free Delivery
+              </span>
 
-                <ButtonRow>
-                  <CartButton
-                    onClick={(e) =>
-                      addToCart(
-                        e,
-                        item._id
-                      )
-                    }
-                  >
-                    Add to Cart
-                  </CartButton>
+              <span>
+                ✓ Easy Returns
+              </span>
 
-                  <BuyButton
-                    onClick={() =>
-                      navigate(
-                        `/product/${item._id}`
-                      )
-                    }
-                  >
-                    View Details
-                  </BuyButton>
-                </ButtonRow>
-              </Content>
-            </Slide>
-          );
-        })}
+              <span>
+                ✓ Cash on Delivery
+              </span>
+            </FeatureRow>
+
+            <ButtonRow>
+              <CartButton
+                onClick={(e) =>
+                  addToCart(
+                    e,
+                    currentSlide._id
+                  )
+                }
+              >
+                Add to Cart
+              </CartButton>
+
+              <BuyButton
+                onClick={() =>
+                  navigate(
+                    `/product/${currentSlide._id}`
+                  )
+                }
+              >
+                View Details
+              </BuyButton>
+            </ButtonRow>
+          </Content>
+        </Slide>
       </Wrapper>
 
-      <Arrow right onClick={next}>
+      <Arrow
+        right
+        onClick={next}
+      >
         ❯
       </Arrow>
     </Container>
