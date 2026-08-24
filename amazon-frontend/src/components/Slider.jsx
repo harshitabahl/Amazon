@@ -19,11 +19,9 @@ export const Container = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 100%;
     height: auto;
     min-height: 650px;
     padding: 20px 0;
-    overflow: hidden;
   }
 `;
 
@@ -32,8 +30,9 @@ export const Container = styled.div`
 export const Wrapper = styled.div`
   display: flex;
   height: 100%;
-  transform: translateX(${({ $index }) => $index * -100}%);
+  transform: translate3d(${({ $index }) => $index * -100}%, 0, 0);
   transition: transform 0.8s ease;
+  will-change: transform;
 `;
 
 /* ================= SLIDE ================= */
@@ -55,7 +54,6 @@ export const Slide = styled.div`
 
   @media (max-width: 768px) {
     min-width: 100%;
-    width: 100%;
     height: auto;
     min-height: 650px;
 
@@ -64,8 +62,6 @@ export const Slide = styled.div`
 
     padding: 25px 20px 40px;
     gap: 20px;
-
-    box-sizing: border-box;
   }
 `;
 
@@ -80,6 +76,8 @@ export const ImgContainer = styled.div`
 
   position: relative;
 
+  min-width: 0;
+
   @media (max-width: 768px) {
     width: 100%;
     height: 250px;
@@ -92,6 +90,7 @@ export const Circle = styled.div`
   height: 430px;
 
   border-radius: 50%;
+
   background: linear-gradient(135deg, #ffffff, #e9edf3);
 
   position: absolute;
@@ -115,23 +114,18 @@ export const Image = styled.img`
 
   width: 100%;
   max-width: 420px;
+
   height: 420px;
-  max-height: 420px;
 
   object-fit: contain;
 
   filter: drop-shadow(0 18px 35px rgba(0, 0, 0, 0.18));
-  transition: 0.35s;
 
   @media (max-width: 768px) {
     width: 220px;
     max-width: 220px;
-    height: 220px;
-    max-height: 220px;
-  }
 
-  &:hover {
-    transform: scale(1.06);
+    height: 220px;
   }
 `;
 
@@ -142,6 +136,7 @@ export const Content = styled.div`
 
   display: flex;
   flex-direction: column;
+
   gap: 18px;
 
   min-width: 0;
@@ -153,14 +148,18 @@ export const Content = styled.div`
   @media (max-width: 768px) {
     width: 100%;
     max-width: 100%;
+
     flex: none;
-    margin: 0;
+
     padding: 0 10px;
+
     box-sizing: border-box;
+
     text-align: center;
+
     align-items: center;
+
     gap: 12px;
-    min-width: 0;
   }
 `;
 
@@ -178,11 +177,6 @@ export const Badge = styled.div`
 
   font-size: 14px;
   font-weight: 700;
-
-  @media (max-width: 768px) {
-    padding: 7px 14px;
-    font-size: 13px;
-  }
 `;
 
 /* ================= TITLE ================= */
@@ -192,6 +186,7 @@ export const Title = styled.h1`
 
   font-size: 42px;
   font-weight: 800;
+
   line-height: 1.2;
 
   color: #111;
@@ -203,14 +198,15 @@ export const Title = styled.h1`
   overflow: hidden;
 
   display: -webkit-box;
+
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 
   @media (max-width: 768px) {
-    width: 100%;
     height: auto;
 
     font-size: 25px;
+
     line-height: 1.25;
 
     -webkit-line-clamp: 3;
@@ -223,12 +219,13 @@ export const Title = styled.h1`
 
 export const Rating = styled.div`
   color: #ffa41c;
+
   font-size: 19px;
+
   font-weight: 600;
 
   @media (max-width: 768px) {
     font-size: 16px;
-    white-space: normal;
   }
 `;
 
@@ -238,6 +235,7 @@ export const Desc = styled.p`
   width: 100%;
 
   font-size: 18px;
+
   line-height: 1.7;
 
   color: #555;
@@ -247,7 +245,9 @@ export const Desc = styled.p`
   overflow: hidden;
 
   display: -webkit-box;
+
   -webkit-line-clamp: 3;
+
   -webkit-box-orient: vertical;
 
   margin: 0;
@@ -256,6 +256,7 @@ export const Desc = styled.p`
     height: auto;
 
     font-size: 15px;
+
     line-height: 1.5;
 
     -webkit-line-clamp: 3;
@@ -268,17 +269,22 @@ export const FeatureRow = styled.div`
   width: 100%;
 
   display: flex;
+
   gap: 18px;
+
   flex-wrap: wrap;
 
   color: #007600;
 
   font-size: 15px;
+
   font-weight: 600;
 
   @media (max-width: 768px) {
     justify-content: center;
+
     gap: 8px 14px;
+
     font-size: 13px;
   }
 `;
@@ -287,21 +293,29 @@ export const FeatureRow = styled.div`
 
 export const PriceRow = styled.div`
   display: flex;
+
   align-items: flex-end;
+
   gap: 16px;
 
   @media (max-width: 768px) {
     width: 100%;
+
     justify-content: center;
+
     align-items: center;
+
     flex-wrap: wrap;
+
     gap: 6px 12px;
   }
 `;
 
 export const Price = styled.h2`
   font-size: 56px;
+
   color: #b12704;
+
   margin: 0;
 
   @media (max-width: 1024px) {
@@ -315,7 +329,9 @@ export const Price = styled.h2`
 
 export const OldPrice = styled.span`
   font-size: 24px;
+
   color: #777;
+
   text-decoration: line-through;
 
   @media (max-width: 768px) {
@@ -325,7 +341,9 @@ export const OldPrice = styled.span`
 
 export const Discount = styled.span`
   color: #007600;
+
   font-size: 22px;
+
   font-weight: 700;
 
   @media (max-width: 768px) {
@@ -337,74 +355,87 @@ export const Discount = styled.span`
 
 export const ButtonRow = styled.div`
   display: flex;
+
   gap: 18px;
+
   margin-top: auto;
+
   padding-top: 20px;
 
   @media (max-width: 768px) {
     width: 100%;
+
     flex-direction: column;
+
     align-items: center;
+
     gap: 10px;
+
     margin-top: 0;
+
     padding-top: 10px;
   }
 `;
 
 export const CartButton = styled.button`
   padding: 15px 34px;
-  border: none;
-  border-radius: 999px;
-  background: #ffd814;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.25s;
 
-  @media (max-width: 768px) {
-    width: 100%;
-    padding: 13px 25px;
-    font-size: 15px;
-  }
+  border: none;
+
+  border-radius: 999px;
+
+  background: #ffd814;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  cursor: pointer;
 `;
 
 export const BuyButton = styled.button`
   padding: 15px 34px;
-  border: none;
-  border-radius: 999px;
-  background: #fa8900;
-  color: white;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.25s;
 
-  @media (max-width: 768px) {
-    width: 100%;
-    padding: 13px 25px;
-    font-size: 15px;
-  }
+  border: none;
+
+  border-radius: 999px;
+
+  background: #fa8900;
+
+  color: white;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  cursor: pointer;
 `;
 
 /* ================= ARROWS ================= */
 
 export const Arrow = styled.div`
   width: 60px;
+
   height: 60px;
 
   border-radius: 50%;
+
   background: white;
 
   position: absolute;
 
   top: 50%;
+
   transform: translateY(-50%);
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   font-size: 30px;
+
   cursor: pointer;
 
   z-index: 20;
@@ -412,22 +443,19 @@ export const Arrow = styled.div`
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 
   left: ${(props) => props.left && "25px"};
-  right: ${(props) => props.right && "25px"};
 
-  transition: 0.25s;
+  right: ${(props) => props.right && "25px"};
 
   @media (max-width: 768px) {
     width: 42px;
+
     height: 42px;
+
     font-size: 20px;
 
     left: ${(props) => props.left && "8px"};
-    right: ${(props) => props.right && "8px"};
-  }
 
-  &:hover {
-    background: #ffd814;
-    transform: translateY(-50%) scale(1.08);
+    right: ${(props) => props.right && "8px"};
   }
 `;
 
@@ -442,7 +470,12 @@ export default function Slider() {
 
   const intervalRef = useRef(null);
 
-  /* ================= CURRENT USER ================= */
+  /* ================= HERO API ================= */
+
+  const HERO_API =
+    "https://amazon-7t4h.onrender.com/api/products/hero";
+
+  /* ================= USER ================= */
 
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
@@ -450,10 +483,7 @@ export default function Slider() {
 
   const userId = currentUser?._id || currentUser?.id;
 
-  /* ================= HERO API ================= */
-
-  const HERO_API =
-    "https://amazon-7t4h.onrender.com/api/products/hero";
+  /* ================= FETCH HERO ================= */
 
   useEffect(() => {
     let cancelled = false;
@@ -597,7 +627,7 @@ export default function Slider() {
       <Wrapper $index={index}>
         {slides.map((item, slideIndex) => {
           const imageSrc =
-            item.img && item.img.trim() !== ""
+            item.img && item.img.trim()
               ? item.img
               : getPlaceholderImage(item.title);
 
@@ -607,22 +637,32 @@ export default function Slider() {
                 <Circle />
 
                 <Image
-                  width="420"
-                  height="420"
+                  width={420}
+                  height={420}
                   src={imageSrc}
-                  alt={item.title}
+                  alt={item.title || "Product"}
                   loading={
-                    slideIndex === 0 ? "eager" : "lazy"
+                    slideIndex === 0
+                      ? "eager"
+                      : "lazy"
                   }
                   fetchPriority={
-                    slideIndex === 0 ? "high" : "low"
+                    slideIndex === 0
+                      ? "high"
+                      : "low"
                   }
-                  decoding="async"
+                  decoding={
+                    slideIndex === 0
+                      ? "sync"
+                      : "async"
+                  }
                 />
               </ImgContainer>
 
               <Content>
-                <Badge>Limited Time Deal</Badge>
+                <Badge>
+                  Limited Time Deal
+                </Badge>
 
                 <Title
                   onClick={() =>
@@ -637,31 +677,54 @@ export default function Slider() {
 
                 <Rating>
                   ⭐⭐⭐⭐⭐{" "}
-                  <span style={{ color: "#007185" }}>
+                  <span
+                    style={{
+                      color: "#007185",
+                    }}
+                  >
                     4.5 (128 Reviews)
                   </span>
                 </Rating>
 
                 <PriceRow>
-                  <Price>₹{item.price}</Price>
+                  <Price>
+                    ₹{item.price}
+                  </Price>
 
-                  <OldPrice>₹999</OldPrice>
+                  <OldPrice>
+                    ₹999
+                  </OldPrice>
 
-                  <Discount>60% OFF</Discount>
+                  <Discount>
+                    60% OFF
+                  </Discount>
                 </PriceRow>
 
-                <Desc>{item.desc}</Desc>
+                <Desc>
+                  {item.desc}
+                </Desc>
 
                 <FeatureRow>
-                  <span>✓ Free Delivery</span>
-                  <span>✓ Easy Returns</span>
-                  <span>✓ Cash on Delivery</span>
+                  <span>
+                    ✓ Free Delivery
+                  </span>
+
+                  <span>
+                    ✓ Easy Returns
+                  </span>
+
+                  <span>
+                    ✓ Cash on Delivery
+                  </span>
                 </FeatureRow>
 
                 <ButtonRow>
                   <CartButton
                     onClick={(e) =>
-                      addToCart(e, item._id)
+                      addToCart(
+                        e,
+                        item._id
+                      )
                     }
                   >
                     Add to Cart
@@ -669,7 +732,9 @@ export default function Slider() {
 
                   <BuyButton
                     onClick={() =>
-                      navigate(`/product/${item._id}`)
+                      navigate(
+                        `/product/${item._id}`
+                      )
                     }
                   >
                     View Details
