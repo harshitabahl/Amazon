@@ -28,7 +28,9 @@ const Track = styled.div`
   display: flex;
   gap: 18px;
   transition: transform 0.45s ease;
-  transform: translateX(calc(-${({ $index }) => $index * 100}%));
+  transform: translateX(
+    calc(-${({ $index }) => $index * 100}%)
+  );
 `;
 
 const CardWrapper = styled.div`
@@ -60,26 +62,37 @@ const Arrow = styled.div`
 `;
 
 const CategoryRow = ({ title, products = [] }) => {
-  const items = products.slice(0, 10);
+  const items = products.slice(0, 6);
 
   const [index, setIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(4);
 
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth <= 768) setVisibleItems(2);
-      else if (window.innerWidth <= 992) setVisibleItems(3);
-      else setVisibleItems(4);
+      if (window.innerWidth <= 768) {
+        setVisibleItems(2);
+      } else if (window.innerWidth <= 992) {
+        setVisibleItems(3);
+      } else {
+        setVisibleItems(4);
+      }
     };
 
     update();
+
     window.addEventListener("resize", update);
 
-    return () => window.removeEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   const cardWidth = 100 / visibleItems;
-  const maxIndex = Math.max(0, items.length - visibleItems);
+
+  const maxIndex = Math.max(
+    0,
+    items.length - visibleItems
+  );
 
   const move = (dir) => {
     setIndex((prev) =>
@@ -95,26 +108,37 @@ const CategoryRow = ({ title, products = [] }) => {
 
       <RowWrapper>
         {index > 0 && (
-          <Arrow left onClick={() => move("left")}>
+          <Arrow
+            left
+            onClick={() => move("left")}
+          >
             ❮
           </Arrow>
         )}
 
         <Window>
           <Track $index={index}>
-            {items.map((item) => (
+            {items.map((item, itemIndex) => (
               <CardWrapper
                 key={item._id}
                 $cardWidth={cardWidth}
               >
-                <ProductCard product={item} />
+                <ProductCard
+                  product={item}
+                  priority={
+                    index === 0 && itemIndex === 0
+                  }
+                />
               </CardWrapper>
             ))}
           </Track>
         </Window>
 
         {index < maxIndex && (
-          <Arrow right onClick={() => move("right")}>
+          <Arrow
+            right
+            onClick={() => move("right")}
+          >
             ❯
           </Arrow>
         )}

@@ -25,40 +25,70 @@ const Home = () => {
   };
 
   useEffect(() => {
-  axios
-    .get("https://amazon-7t4h.onrender.com/api/products/home")
-    .then((res) => {
-      console.log("HOME API RESPONSE:", res.data);
-
-      setHomeData({
-        recommended: addFallbackImage(res.data.recommended || []),
-        clothing: addFallbackImage(res.data.clothing || []),
-        shoes: addFallbackImage(res.data.shoes || []),
-        electronics: addFallbackImage(res.data.electronics || []),
-        watches: addFallbackImage(res.data.watches || []),
-        bags: addFallbackImage(res.data.bags || []),
-        homeKitchen: addFallbackImage(res.data.homeKitchen || []),
-        trending: addFallbackImage(res.data.trending || []),
+    axios
+      .get("https://amazon-7t4h.onrender.com/api/products/home")
+      .then((res) => {
+        setHomeData({
+          recommended: addFallbackImage(res.data.recommended || []),
+          clothing: addFallbackImage(res.data.clothing || []),
+          shoes: addFallbackImage(res.data.shoes || []),
+          electronics: addFallbackImage(res.data.electronics || []),
+          watches: addFallbackImage(res.data.watches || []),
+          bags: addFallbackImage(res.data.bags || []),
+          homeKitchen: addFallbackImage(res.data.homeKitchen || []),
+          trending: addFallbackImage(res.data.trending || []),
+        });
+      })
+      .catch((err) => {
+        console.log("HOME API ERROR:", err);
       });
-    })
-    .catch((err) => {
-      console.log("HOME API ERROR:", err);
-    });
-}, []);
+  }, []);
 
   return (
     <div>
       <Navbar />
 
       <Slider />
-      <CategoryRow title="Recommended for You" products={homeData.recommended} />
-      <CategoryRow title="Clothing" products={homeData.clothing} />
-      <CategoryRow title="Shoes" products={homeData.shoes} />
-      <CategoryRow title="Electronics" products={homeData.electronics} />
-      <CategoryRow title="Watches" products={homeData.watches} />
-      <CategoryRow title="Accessories" products={homeData.bags} />
-      <CategoryRow title="Home & Kitchen" products={homeData.homeKitchen} />
-      <CategoryRow title="Trending Deals" products={homeData.trending} />
+
+      <CategoryRow
+        title="Recommended for You"
+        products={homeData.recommended}
+      />
+
+      <CategoryRow
+        title="Clothing"
+        products={homeData.clothing}
+      />
+
+      <CategoryRow
+        title="Shoes"
+        products={homeData.shoes}
+      />
+
+      <CategoryRow
+        title="Electronics"
+        products={homeData.electronics}
+      />
+
+      <CategoryRow
+        title="Watches"
+        products={homeData.watches}
+      />
+
+      <CategoryRow
+        title="Accessories"
+        products={homeData.bags}
+      />
+
+      <CategoryRow
+        title="Home & Kitchen"
+        products={homeData.homeKitchen}
+      />
+
+      <CategoryRow
+        title="Trending Deals"
+        products={homeData.trending}
+      />
     </div>
   );
 };
