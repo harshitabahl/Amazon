@@ -115,6 +115,7 @@ export const Image = styled.img`
 
   width: 100%;
   max-width: 420px;
+  height: 420px;
   max-height: 420px;
 
   object-fit: contain;
@@ -152,19 +153,13 @@ export const Content = styled.div`
   @media (max-width: 768px) {
     width: 100%;
     max-width: 100%;
-
     flex: none;
-
     margin: 0;
     padding: 0 10px;
-
     box-sizing: border-box;
-
     text-align: center;
     align-items: center;
-
     gap: 12px;
-
     min-width: 0;
   }
 `;
@@ -283,9 +278,7 @@ export const FeatureRow = styled.div`
 
   @media (max-width: 768px) {
     justify-content: center;
-
     gap: 8px 14px;
-
     font-size: 13px;
   }
 `;
@@ -295,27 +288,20 @@ export const FeatureRow = styled.div`
 export const PriceRow = styled.div`
   display: flex;
   align-items: flex-end;
-
   gap: 16px;
 
   @media (max-width: 768px) {
     width: 100%;
-
     justify-content: center;
-
     align-items: center;
-
     flex-wrap: wrap;
-
     gap: 6px 12px;
   }
 `;
 
 export const Price = styled.h2`
   font-size: 56px;
-
   color: #b12704;
-
   margin: 0;
 
   @media (max-width: 1024px) {
@@ -329,9 +315,7 @@ export const Price = styled.h2`
 
 export const OldPrice = styled.span`
   font-size: 24px;
-
   color: #777;
-
   text-decoration: line-through;
 
   @media (max-width: 768px) {
@@ -341,9 +325,7 @@ export const OldPrice = styled.span`
 
 export const Discount = styled.span`
   color: #007600;
-
   font-size: 22px;
-
   font-weight: 700;
 
   @media (max-width: 768px) {
@@ -355,78 +337,51 @@ export const Discount = styled.span`
 
 export const ButtonRow = styled.div`
   display: flex;
-
   gap: 18px;
-
   margin-top: auto;
-
   padding-top: 20px;
 
   @media (max-width: 768px) {
     width: 100%;
-
     flex-direction: column;
-
     align-items: center;
-
     gap: 10px;
-
     margin-top: 0;
-
     padding-top: 10px;
   }
 `;
 
 export const CartButton = styled.button`
   padding: 15px 34px;
-
   border: none;
-
   border-radius: 999px;
-
   background: #ffd814;
-
   font-size: 17px;
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition: 0.25s;
 
   @media (max-width: 768px) {
     width: 100%;
-
     padding: 13px 25px;
-
     font-size: 15px;
   }
 `;
 
 export const BuyButton = styled.button`
   padding: 15px 34px;
-
   border: none;
-
   border-radius: 999px;
-
   background: #fa8900;
-
   color: white;
-
   font-size: 17px;
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition: 0.25s;
 
   @media (max-width: 768px) {
     width: 100%;
-
     padding: 13px 25px;
-
     font-size: 15px;
   }
 `;
@@ -438,23 +393,18 @@ export const Arrow = styled.div`
   height: 60px;
 
   border-radius: 50%;
-
   background: white;
 
   position: absolute;
 
   top: 50%;
-
   transform: translateY(-50%);
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
   font-size: 30px;
-
   cursor: pointer;
 
   z-index: 20;
@@ -469,7 +419,6 @@ export const Arrow = styled.div`
   @media (max-width: 768px) {
     width: 42px;
     height: 42px;
-
     font-size: 20px;
 
     left: ${(props) => props.left && "8px"};
@@ -478,7 +427,6 @@ export const Arrow = styled.div`
 
   &:hover {
     background: #ffd814;
-
     transform: translateY(-50%) scale(1.08);
   }
 `;
@@ -490,7 +438,6 @@ export default function Slider() {
   const [index, setIndex] = useState(0);
 
   const navigate = useNavigate();
-
   const { fetchCart } = useCart();
 
   const intervalRef = useRef(null);
@@ -503,7 +450,7 @@ export default function Slider() {
 
   const userId = currentUser?._id || currentUser?.id;
 
-  /* ================= FETCH HERO PRODUCTS ================= */
+  /* ================= HERO API ================= */
 
   const HERO_API =
     "https://amazon-7t4h.onrender.com/api/products/hero";
@@ -517,7 +464,29 @@ export default function Slider() {
 
         if (cancelled) return;
 
-        setSlides(res.data.slice(0, 5));
+        const heroSlides = res.data.slice(0, 5);
+
+        /* ================= PRELOAD FIRST HERO IMAGE ================= */
+
+        const firstImage = heroSlides[0]?.img;
+
+        if (firstImage) {
+          const existingPreload = document.querySelector(
+            `link[rel="preload"][href="${firstImage}"]`
+          );
+
+          if (!existingPreload) {
+            const preload = document.createElement("link");
+
+            preload.rel = "preload";
+            preload.as = "image";
+            preload.href = firstImage;
+
+            document.head.appendChild(preload);
+          }
+        }
+
+        setSlides(heroSlides);
       } catch (err) {
         if (!cancelled) {
           console.error("Hero products error:", err);
@@ -531,7 +500,6 @@ export default function Slider() {
       cancelled = true;
     };
   }, []);
-
 
   /* ================= AUTO SLIDER ================= */
 
@@ -653,30 +621,26 @@ export default function Slider() {
 
           return (
             <Slide key={item._id}>
-
-              {/* IMAGE */}
-
               <ImgContainer>
                 <Circle />
 
                 <Image
-                width="420"
-                height="420"
-                src={imageSrc}
-                alt={item.title}
-                loading={slideIndex === 0 ? "eager" : "lazy"}
-                fetchPriority={slideIndex === 0 ? "high" : "low"}
-                decoding="async"
-              />
+                  width="420"
+                  height="420"
+                  src={imageSrc}
+                  alt={item.title}
+                  loading={
+                    slideIndex === 0 ? "eager" : "lazy"
+                  }
+                  fetchPriority={
+                    slideIndex === 0 ? "high" : "low"
+                  }
+                  decoding="async"
+                />
               </ImgContainer>
 
-              {/* CONTENT */}
-
               <Content>
-
-                <Badge>
-                  Limited Time Deal
-                </Badge>
+                <Badge>Limited Time Deal</Badge>
 
                 <Title
                   onClick={() =>
@@ -691,49 +655,28 @@ export default function Slider() {
 
                 <Rating>
                   ⭐⭐⭐⭐⭐{" "}
-                  <span
-                    style={{
-                      color: "#007185",
-                    }}
-                  >
+                  <span style={{ color: "#007185" }}>
                     4.5 (128 Reviews)
                   </span>
                 </Rating>
 
                 <PriceRow>
-                  <Price>
-                    ₹{item.price}
-                  </Price>
+                  <Price>₹{item.price}</Price>
 
-                  <OldPrice>
-                    ₹999
-                  </OldPrice>
+                  <OldPrice>₹999</OldPrice>
 
-                  <Discount>
-                    60% OFF
-                  </Discount>
+                  <Discount>60% OFF</Discount>
                 </PriceRow>
 
-                <Desc>
-                  {item.desc}
-                </Desc>
+                <Desc>{item.desc}</Desc>
 
                 <FeatureRow>
-                  <span>
-                    ✓ Free Delivery
-                  </span>
-
-                  <span>
-                    ✓ Easy Returns
-                  </span>
-
-                  <span>
-                    ✓ Cash on Delivery
-                  </span>
+                  <span>✓ Free Delivery</span>
+                  <span>✓ Easy Returns</span>
+                  <span>✓ Cash on Delivery</span>
                 </FeatureRow>
 
                 <ButtonRow>
-
                   <CartButton
                     onClick={(e) =>
                       addToCart(e, item._id)
@@ -749,11 +692,8 @@ export default function Slider() {
                   >
                     View Details
                   </BuyButton>
-
                 </ButtonRow>
-
               </Content>
-
             </Slide>
           );
         })}
