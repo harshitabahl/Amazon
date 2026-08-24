@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function FilterSidebar({
   filterData,
   filters,
@@ -6,39 +8,51 @@ function FilterSidebar({
   const brands = filterData.brands || [];
   const categories = filterData.categories || [];
 
+  const [showAllBrands, setShowAllBrands] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
+  const visibleBrands = showAllBrands
+    ? brands
+    : brands.slice(0, 10);
+
+  const visibleCategories = showAllCategories
+    ? categories
+    : categories.slice(0, 10);
+
+  const updateFilters = (changes) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...changes,
+    }));
+  };
+
   const toggleBrand = (brand) => {
-    if (filters.brands.includes(brand)) {
-      setFilters({
-        ...filters,
-        brands: filters.brands.filter((b) => b !== brand),
-      });
-    } else {
-      setFilters({
-        ...filters,
-        brands: [...filters.brands, brand],
-      });
-    }
+    updateFilters({
+      brands: filters.brands.includes(brand)
+        ? filters.brands.filter((b) => b !== brand)
+        : [...filters.brands, brand],
+    });
   };
 
   const setPrice = (min, max) => {
-    setFilters({
-      ...filters,
+    updateFilters({
       minPrice: min,
       maxPrice: max,
     });
   };
 
-    const clearFilters = () => {
-        setFilters({
-            category: "",
-            brands: [],
-            minPrice: "",
-            maxPrice: "",
-            rating: "",
-            sort: "featured",
-            discount: "",
-        });
-    };
+  const clearFilters = () => {
+    setFilters({
+      category: "",
+      brands: [],
+      minPrice: "",
+      maxPrice: "",
+      rating: "",
+      sort: "featured",
+      discount: "",
+      inStock: "",
+    });
+  };
 
   return (
     <aside className="filters">
@@ -58,7 +72,7 @@ function FilterSidebar({
       <div className="filter-section">
         <h3>Category</h3>
 
-        {categories.map((cat) => (
+        {visibleCategories.map((cat) => (
           <label
             key={cat.name}
             className="filter-item"
@@ -68,18 +82,28 @@ function FilterSidebar({
               name="category"
               checked={filters.category === cat.name}
               onChange={() =>
-                setFilters({
-                  ...filters,
+                updateFilters({
                   category: cat.name,
                 })
               }
             />
 
-            <span>
-              {cat.name}
-            </span>
+            <span>{cat.name}</span>
           </label>
         ))}
+
+        {categories.length > 10 && (
+          <button
+            className="clear-btn"
+            onClick={() =>
+              setShowAllCategories((prev) => !prev)
+            }
+          >
+            {showAllCategories
+              ? "Show Less"
+              : `Show More (${categories.length - 10})`}
+          </button>
+        )}
       </div>
 
       {/* BRAND */}
@@ -87,7 +111,7 @@ function FilterSidebar({
       <div className="filter-section">
         <h3>Brand</h3>
 
-        {brands.map((brand) => (
+        {visibleBrands.map((brand) => (
           <label
             key={brand.name}
             className="filter-item"
@@ -95,14 +119,27 @@ function FilterSidebar({
             <input
               type="checkbox"
               checked={filters.brands.includes(brand.name)}
-              onChange={() => toggleBrand(brand.name)}
+              onChange={() =>
+                toggleBrand(brand.name)
+              }
             />
 
-            <span>
-              {brand.name}
-            </span>
+            <span>{brand.name}</span>
           </label>
         ))}
+
+        {brands.length > 10 && (
+          <button
+            className="clear-btn"
+            onClick={() =>
+              setShowAllBrands((prev) => !prev)
+            }
+          >
+            {showAllBrands
+              ? "Show Less"
+              : `Show More (${brands.length - 10})`}
+          </button>
+        )}
       </div>
 
       {/* PRICE */}
@@ -134,151 +171,152 @@ function FilterSidebar({
         </button>
       </div>
 
-
       {/* CUSTOMER RATING */}
 
-            <div className="filter-section">
-            <h3>Customer Rating</h3>
+      <div className="filter-section">
+        <h3>Customer Rating</h3>
 
-            <label className="filter-item">
-                <input
-                type="radio"
-                name="rating"
-                checked={filters.rating === "4"}
-                onChange={() =>
-                    setFilters({
-                    ...filters,
-                    rating: "4",
-                    })
-                }
-                />
-                <span>4★ & above</span>
-            </label>
+        <label className="filter-item">
+          <input
+            type="radio"
+            name="rating"
+            checked={filters.rating === "4"}
+            onChange={() =>
+              updateFilters({
+                rating: "4",
+              })
+            }
+          />
 
-            <label className="filter-item">
-                <input
-                type="radio"
-                name="rating"
-                checked={filters.rating === "3"}
-                onChange={() =>
-                    setFilters({
-                    ...filters,
-                    rating: "3",
-                    })
-                }
-                />
-                <span>3★ & above</span>
-            </label>
+          <span>4★ & above</span>
+        </label>
 
-            <button
-                className="clear-btn"
-                onClick={() =>
-                setFilters({
-                    ...filters,
-                    rating: "",
-                })
-                }
-            >
-                Clear Rating
-            </button>
-            </div>
+        <label className="filter-item">
+          <input
+            type="radio"
+            name="rating"
+            checked={filters.rating === "3"}
+            onChange={() =>
+              updateFilters({
+                rating: "3",
+              })
+            }
+          />
 
-            {/* DISCOUNT */}
+          <span>3★ & above</span>
+        </label>
 
-        <div className="filter-section">
+        <button
+          className="clear-btn"
+          onClick={() =>
+            updateFilters({
+              rating: "",
+            })
+          }
+        >
+          Clear Rating
+        </button>
+      </div>
+
+      {/* DISCOUNT */}
+
+      <div className="filter-section">
         <h3>Discount</h3>
 
         <label className="filter-item">
-            <input
+          <input
             type="radio"
             name="discount"
             checked={filters.discount === "10"}
             onChange={() =>
-                setFilters({
-                ...filters,
+              updateFilters({
                 discount: "10",
-                })
+              })
             }
-            />
-            <span>10% Off or more</span>
+          />
+
+          <span>10% Off or more</span>
         </label>
 
         <label className="filter-item">
-            <input
+          <input
             type="radio"
             name="discount"
             checked={filters.discount === "25"}
             onChange={() =>
-                setFilters({
-                ...filters,
+              updateFilters({
                 discount: "25",
-                })
+              })
             }
-            />
-            <span>25% Off or more</span>
+          />
+
+          <span>25% Off or more</span>
         </label>
 
         <label className="filter-item">
-            <input
+          <input
             type="radio"
             name="discount"
             checked={filters.discount === "50"}
             onChange={() =>
-                setFilters({
-                ...filters,
+              updateFilters({
                 discount: "50",
-                })
+              })
             }
-            />
-            <span>50% Off or more</span>
+          />
+
+          <span>50% Off or more</span>
         </label>
 
         <button
-            className="clear-btn"
-            onClick={() =>
-            setFilters({
-                ...filters,
-                discount: "",
+          className="clear-btn"
+          onClick={() =>
+            updateFilters({
+              discount: "",
             })
-            }
+          }
         >
-            Clear Discount
+          Clear Discount
         </button>
-        </div>
+      </div>
 
-        {/* AVAILABILITY */}
+      {/* AVAILABILITY */}
 
-        <div className="filter-section">
+      <div className="filter-section">
         <h3>Availability</h3>
 
         <label className="filter-item">
-            <input
+          <input
             type="checkbox"
             checked={filters.inStock === "true"}
             onChange={(e) =>
-                setFilters({
-                ...filters,
-                inStock: e.target.checked ? "true" : "",
-                })
+              updateFilters({
+                inStock: e.target.checked
+                  ? "true"
+                  : "",
+              })
             }
-            />
-            <span>In Stock</span>
+          />
+
+          <span>In Stock</span>
         </label>
 
         <label className="filter-item">
-            <input
+          <input
             type="checkbox"
             checked={filters.inStock === "false"}
             onChange={(e) =>
-                setFilters({
-                ...filters,
-                inStock: e.target.checked ? "false" : "",
-                })
+              updateFilters({
+                inStock: e.target.checked
+                  ? "false"
+                  : "",
+              })
             }
-            />
-            <span>Out of Stock</span>
+          />
+
+          <span>Out of Stock</span>
         </label>
-        </div>
+      </div>
     </aside>
   );
 }

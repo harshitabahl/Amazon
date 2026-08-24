@@ -43,7 +43,12 @@ function Products() {
 
   // Reload filter options whenever search/category/price changes
   useEffect(() => {
-    fetchFilters();
+    const timer = setTimeout(() => {
+      fetchFilters();
+    }, 300);
+
+    return () => clearTimeout(timer);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     search,
@@ -51,7 +56,6 @@ function Products() {
     filters.minPrice,
     filters.maxPrice,
   ]);
-
   // Reload products whenever filters/page/search changes
   useEffect(() => {
     fetchProducts();
