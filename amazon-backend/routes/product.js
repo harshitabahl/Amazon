@@ -7,9 +7,7 @@ const Product = require("../models/Product");
 
 router.get("/hero", async (req, res) => {
   try {
-    const products = await Product.find({
-      img: { $regex: /^https?:\/\// },
-    })
+    const products = await Product.find({})
       .select("_id title img price desc")
       .limit(5)
       .lean();
@@ -23,7 +21,6 @@ router.get("/hero", async (req, res) => {
     });
   }
 });
-
 /* =========================================================
    HOME PAGE DATA
    ========================================================= */
