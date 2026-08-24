@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 import { useCart } from "../context/cartContext";
 
-function ProductCard({ product, isPriority = false }) {
+function ProductCard({ product }) {
   const navigate = useNavigate();
   const { fetchCart } = useCart();
 
@@ -28,8 +28,6 @@ function ProductCard({ product, isPriority = false }) {
     ((oldPrice - price) / oldPrice) * 100
   );
 
-  /* ================= IMAGE ================= */
-
   const getImage = () => {
     const img = product?.img;
     const title = product?.title || "";
@@ -50,8 +48,6 @@ function ProductCard({ product, isPriority = false }) {
 
     return getPlaceholderImage(title);
   };
-
-  /* ================= ADD TO CART ================= */
 
   const addToCart = async (e) => {
     e.stopPropagation();
@@ -80,8 +76,6 @@ function ProductCard({ product, isPriority = false }) {
     }
   };
 
-  /* ================= UI ================= */
-
   return (
     <div
       className="card"
@@ -89,8 +83,6 @@ function ProductCard({ product, isPriority = false }) {
         navigate(`/product/${product._id}`)
       }
     >
-      {/* IMAGE */}
-
       <div className="image-container">
         <button
           type="button"
@@ -105,10 +97,10 @@ function ProductCard({ product, isPriority = false }) {
           className="product-image"
           src={getImage()}
           alt={product?.title || "Product"}
-          width={420}
-          height={420}
-          loading={isPriority ? "eager" : "lazy"}
-          fetchPriority={isPriority ? "high" : "auto"}
+          width="420"
+          height="420"
+          loading="lazy"
+          fetchPriority="low"
           decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
@@ -119,8 +111,6 @@ function ProductCard({ product, isPriority = false }) {
         />
       </div>
 
-      {/* CONTENT */}
-
       <div className="card-content">
         <div className="brand">
           {product?.brand || "Amazon Brand"}
@@ -128,12 +118,10 @@ function ProductCard({ product, isPriority = false }) {
 
         <h3
           className="card-title"
-          title={product?.title || ""}
+          title={product?.title}
         >
-          {product?.title || "Product"}
+          {product?.title}
         </h3>
-
-        {/* RATING */}
 
         <div className="rating">
           <span className="rating-stars">
@@ -144,8 +132,6 @@ function ProductCard({ product, isPriority = false }) {
             ({reviews.toLocaleString()})
           </span>
         </div>
-
-        {/* PRICE */}
 
         <div className="price-row">
           <span className="price">
@@ -161,19 +147,13 @@ function ProductCard({ product, isPriority = false }) {
           </span>
         </div>
 
-        {/* DELIVERY */}
-
         <div className="delivery">
           <strong>FREE Delivery</strong> Tomorrow
         </div>
 
-        {/* PRIME */}
-
         <div className="prime">
           ✔ Prime
         </div>
-
-        {/* CART */}
 
         <button
           type="button"
