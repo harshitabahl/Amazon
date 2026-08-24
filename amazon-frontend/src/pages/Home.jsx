@@ -18,47 +18,94 @@ const Home = () => {
   });
 
   const addFallbackImage = (products = []) => {
-    return products.map((p) => ({
-      ...p,
-      img: p.img || getPlaceholderImage(p.title),
+    return products.map((product) => ({
+      ...product,
+      img: product.img || getPlaceholderImage(product.title),
     }));
   };
 
   useEffect(() => {
-  axios
-    .get("https://amazon-7t4h.onrender.com/api/products/home")
-    .then((res) => {
-      console.log("HOME API RESPONSE:", res.data);
+    let cancelled = false;
 
-      setHomeData({
-        recommended: addFallbackImage(res.data.recommended || []),
-        clothing: addFallbackImage(res.data.clothing || []),
-        shoes: addFallbackImage(res.data.shoes || []),
-        electronics: addFallbackImage(res.data.electronics || []),
-        watches: addFallbackImage(res.data.watches || []),
-        bags: addFallbackImage(res.data.bags || []),
-        homeKitchen: addFallbackImage(res.data.homeKitchen || []),
-        trending: addFallbackImage(res.data.trending || []),
-      });
-    })
-    .catch((err) => {
-      console.log("HOME API ERROR:", err);
-    });
-}, []);
+    const fetchHomeData = async () => {
+      try {
+        const res = await axios.get(
+          "https://amazon-7t4h.onrender.com/api/products/home"
+        );
+
+        if (cancelled) return;
+
+        const data = res.data || {};
+
+        setHomeData({
+          recommended: addFallbackImage(data.recommended),
+          clothing: addFallbackImage(data.clothing),
+          shoes: addFallbackImage(data.shoes),
+          electronics: addFallbackImage(data.electronics),
+          watches: addFallbackImage(data.watches),
+          bags: addFallbackImage(data.bags),
+          homeKitchen: addFallbackImage(data.homeKitchen),
+          trending: addFallbackImage(data.trending),
+        });
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Home API error:", err);
+        }
+      }
+    };
+
+    fetchHomeData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div>
       <Navbar />
 
       <Slider />
-      <CategoryRow title="Recommended for You" products={homeData.recommended} />
-      <CategoryRow title="Clothing" products={homeData.clothing} />
-      <CategoryRow title="Shoes" products={homeData.shoes} />
-      <CategoryRow title="Electronics" products={homeData.electronics} />
-      <CategoryRow title="Watches" products={homeData.watches} />
-      <CategoryRow title="Accessories" products={homeData.bags} />
-      <CategoryRow title="Home & Kitchen" products={homeData.homeKitchen} />
-      <CategoryRow title="Trending Deals" products={homeData.trending} />
+
+      <CategoryRow
+        title="Recommended for You"
+        products={homeData.recommended}
+      />
+
+      <CategoryRow
+        title="Clothing"
+        products={homeData.clothing}
+      />
+
+      <CategoryRow
+        title="Shoes"
+        products={homeData.shoes}
+      />
+
+      <CategoryRow
+        title="Electronics"
+        products={homeData.electronics}
+      />
+
+      <CategoryRow
+        title="Watches"
+        products={homeData.watches}
+      />
+
+      <CategoryRow
+        title="Accessories"
+        products={homeData.bags}
+      />
+
+      <CategoryRow
+        title="Home & Kitchen"
+        products={homeData.homeKitchen}
+      />
+
+      <CategoryRow
+        title="Trending Deals"
+        products={homeData.trending}
+      />
     </div>
   );
 };

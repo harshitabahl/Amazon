@@ -4,57 +4,70 @@ import { Heart } from "lucide-react";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 import { useCart } from "../context/cartContext";
 
-function ProductCard({ product, isPriority = false }) {
+function ProductCard({ product, priority = false }) {
   const navigate = useNavigate();
   const { fetchCart } = useCart();
 
   const price = Number(product?.price) || 299;
 
+  /* ================= USER ================= */
+
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
   );
 
-  const userId = currentUser?._id || currentUser?.id;
+  const userId =
+    currentUser?._id || currentUser?.id;
+
+  /* ================= PRODUCT DATA ================= */
+
+  const productId = product?._id;
 
   const reviews =
     100 +
-    (parseInt(product?._id?.slice(-2), 16) % 400 || 0);
+    (parseInt(productId?.slice(-2), 16) % 400 || 0);
 
-  const rating = (4 + (price % 10) / 10).toFixed(1);
+  const rating = (
+    4 +
+    (price % 10) / 10
+  ).toFixed(1);
 
-  const oldPrice = Math.round(price * 2.7);
+  const oldPrice = Math.round(
+    price * 2.7
+  );
 
   const discount = Math.round(
     ((oldPrice - price) / oldPrice) * 100
   );
 
-  const getImage = () => {
-    const img = product?.img;
-    const title = product?.title || "";
+  /* ================= IMAGE ================= */
 
-    if (
-      typeof img === "string" &&
-      img.startsWith("http")
-    ) {
-      return img;
-    }
+  const productImage =
+    typeof product?.img === "string" &&
+    product.img.trim()
+      ? product.img.startsWith("http")
+        ? product.img
+        : product.img.startsWith("/uploads")
+        ? `https://amazon-7t4h.onrender.com${product.img}`
+        : getPlaceholderImage(
+            product?.title || ""
+          )
+      : getPlaceholderImage(
+          product?.title || ""
+        );
 
-    if (
-      typeof img === "string" &&
-      img.startsWith("/uploads")
-    ) {
-      return `https://amazon-7t4h.onrender.com${img}`;
-    }
-
-    return getPlaceholderImage(title);
-  };
+  /* ================= ADD TO CART ================= */
 
   const addToCart = async (e) => {
     e.stopPropagation();
 
     if (!currentUser || !userId) {
-      alert("Please sign in to add items to your cart.");
+      alert(
+        "Please sign in to add items to your cart."
+      );
+
       navigate("/login");
+
       return;
     }
 
@@ -63,56 +76,98 @@ function ProductCard({ product, isPriority = false }) {
         "https://amazon-7t4h.onrender.com/api/cart",
         {
           userId,
-          productId: product._id,
+          productId,
         }
       );
 
       await fetchCart();
 
-      console.log("Added to cart:", res.data);
+      console.log(
+        "Added to cart:",
+        res.data
+      );
     } catch (err) {
-      console.error("Add to cart error:", err);
-      alert("Failed to add to cart");
+      console.error(
+        "Add to cart error:",
+        err
+      );
+
+      alert(
+        "Failed to add to cart"
+      );
     }
   };
 
+  /* ================= PRODUCT CLICK ================= */
+
+  const openProduct = () => {
+    navigate(`/product/${productId}`);
+  };
+
+  /* ================= UI ================= */
+
   return (
-    <div
+    <article
       className="card"
-      onClick={() =>
-        navigate(`/product/${product._id}`)
-      }
+      onClick={openProduct}
+      style={{
+        contentVisibility: "auto",
+        containIntrinsicSize: "420px",
+      }}
     >
-      <div className="image-container">
+      <div
+        className="image-container"
+        style={{
+          position: "relative",
+          aspectRatio: "1 / 1",
+          contain: "layout paint",
+        }}
+      >
         <button
+          type="button"
           className="wishlist-btn"
           aria-label="Add to Wishlist"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) =>
+            e.stopPropagation()
+          }
         >
-          <Heart size={18} />
+          <Heart size={16} />
         </button>
 
         <img
           className="product-image"
-          src={getImage()}
-          alt={product?.title || "Product"}
-          width={420}
-          height={420}
-          loading={isPriority ? "eager" : "lazy"}
-          fetchPriority={isPriority ? "high" : "auto"}
+          src={productImage}
+          alt={
+            product?.title || "Product"
+          }
+          width="220"
+          height="220"
+          loading={
+            priority
+              ? "eager"
+              : "lazy"
+          }
+          fetchPriority={
+            priority
+              ? "high"
+              : "auto"
+          }
           decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = getPlaceholderImage(
-              product?.title || ""
-            );
+
+            e.currentTarget.src =
+              getPlaceholderImage(
+                product?.title || ""
+              );
           }}
         />
       </div>
 
       <div className="card-content">
         <div className="brand">
-          {product.brand || "Amazon Brand"}
+          {product?.brand ||
+            "Amazon Brand"}
         </div>
 
         <h3
@@ -147,7 +202,10 @@ function ProductCard({ product, isPriority = false }) {
         </div>
 
         <div className="delivery">
-          <strong>FREE Delivery</strong> Tomorrow
+          <strong>
+            FREE Delivery
+          </strong>{" "}
+          Tomorrow
         </div>
 
         <div className="prime">
@@ -155,13 +213,14 @@ function ProductCard({ product, isPriority = false }) {
         </div>
 
         <button
+          type="button"
           className="add-cart-btn"
           onClick={addToCart}
         >
           Add to Cart
         </button>
       </div>
-    </div>
+    </article>
   );
 }
 
