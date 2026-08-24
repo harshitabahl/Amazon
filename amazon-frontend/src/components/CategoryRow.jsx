@@ -4,9 +4,8 @@ import ProductCard from "./ProductCard";
 
 /* ================= CONTAINER ================= */
 
-const Container = styled.section`
-  margin: 30px 0;
-  contain: layout paint;
+const Container = styled.div`
+  margin: 35px 0;
 `;
 
 /* ================= TITLE ================= */
@@ -14,22 +13,14 @@ const Container = styled.section`
 const Title = styled.h2`
   font-size: 24px;
   font-weight: 700;
-
-  margin: 0 25px 16px;
-
+  margin: 0 25px 20px;
   color: #111;
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-    margin-left: 16px;
-  }
 `;
 
 /* ================= ROW ================= */
 
 const RowWrapper = styled.div`
   position: relative;
-  contain: layout;
 `;
 
 /* ================= WINDOW ================= */
@@ -37,14 +28,8 @@ const RowWrapper = styled.div`
 const Window = styled.div`
   overflow: hidden;
   width: 100%;
-
-  padding: 8px 70px;
-
+  padding: 12px 70px;
   box-sizing: border-box;
-
-  @media (max-width: 768px) {
-    padding: 8px 45px;
-  }
 `;
 
 /* ================= TRACK ================= */
@@ -53,15 +38,11 @@ const Track = styled.div`
   display: flex;
   gap: 18px;
 
-  transform: translate3d(
-    calc(-${({ $index }) => $index * 100}%),
-    0,
-    0
+  transition: transform 0.45s ease;
+
+  transform: translateX(
+    calc(-${({ $index }) => $index * 100}%)
   );
-
-  transition: transform 0.4s ease;
-
-  will-change: transform;
 `;
 
 /* ================= CARD ================= */
@@ -71,8 +52,6 @@ const CardWrapper = styled.div`
     calc(${({ $cardWidth }) => $cardWidth}% - 14px);
 
   min-width: 0;
-
-  contain: layout paint;
 `;
 
 /* ================= ARROW ================= */
@@ -111,13 +90,13 @@ const Arrow = styled.button`
   }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
 
-    font-size: 18px;
+    font-size: 20px;
 
-    left: ${(props) => props.left && "5px"};
-    right: ${(props) => props.right && "5px"};
+    left: ${(props) => props.left && "8px"};
+    right: ${(props) => props.right && "8px"};
   }
 `;
 
@@ -128,8 +107,8 @@ const CategoryRow = ({
   products = [],
 }) => {
   /*
-   * Only keep the first 6 products.
-   * This prevents unnecessarily large DOM.
+   * Keep only the first 6 products.
+   * This prevents unnecessary DOM nodes.
    */
   const items = products.slice(0, 6);
 
@@ -140,15 +119,13 @@ const CategoryRow = ({
 
   useEffect(() => {
     const updateVisibleItems = () => {
-      const width = window.innerWidth;
-
-      if (width <= 768) {
+      if (window.innerWidth <= 768) {
         setVisibleItems(2);
-      } else if (width <= 992) {
+      } else if (window.innerWidth <= 992) {
         setVisibleItems(3);
       } else {
         setVisibleItems(4);
-      }
+      };
     };
 
     updateVisibleItems();
@@ -166,18 +143,20 @@ const CategoryRow = ({
     };
   }, []);
 
-  /* ================= RESET INDEX ================= */
-
+  /*
+   * Prevent index from becoming invalid
+   * when screen size changes.
+   */
   useEffect(() => {
     const maxIndex = Math.max(
       0,
       items.length - visibleItems
     );
 
-    if (index > maxIndex) {
-      setIndex(maxIndex);
-    }
-  }, [visibleItems, items.length, index]);
+    setIndex((prev) =>
+      Math.min(prev, maxIndex)
+    );
+  }, [visibleItems, items.length]);
 
   /* ================= SLIDER ================= */
 
@@ -215,16 +194,22 @@ const CategoryRow = ({
       <Title>{title}</Title>
 
       <RowWrapper>
+        {/* LEFT */}
+
         {index > 0 && (
           <Arrow
             type="button"
-            aria-label={`Previous ${title} products`}
             left
-            onClick={() => move("left")}
+            aria-label="Previous products"
+            onClick={() =>
+              move("left")
+            }
           >
             ❮
           </Arrow>
         )}
+
+        {/* PRODUCTS */}
 
         <Window>
           <Track $index={index}>
@@ -232,11 +217,13 @@ const CategoryRow = ({
               (item, itemIndex) => (
                 <CardWrapper
                   key={item._id}
-                  $cardWidth={cardWidth}
+                  $cardWidth={
+                    cardWidth
+                  }
                 >
                   <ProductCard
                     product={item}
-                    priority={
+                    isPriority={
                       index === 0 &&
                       itemIndex === 0
                     }
@@ -247,12 +234,16 @@ const CategoryRow = ({
           </Track>
         </Window>
 
+        {/* RIGHT */}
+
         {index < maxIndex && (
           <Arrow
             type="button"
-            aria-label={`Next ${title} products`}
             right
-            onClick={() => move("right")}
+            aria-label="Next products"
+            onClick={() =>
+              move("right")
+            }
           >
             ❯
           </Arrow>
