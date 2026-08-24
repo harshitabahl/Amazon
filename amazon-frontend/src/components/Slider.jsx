@@ -789,22 +789,15 @@ export default function Slider() {
           <ImgContainer>
             <Circle />
 
-            <Image
-              width={420}
-              height={420}
-              src={imageSrc}
-              alt={
-                currentSlide.title ||
-                "Product"
-              }
-
-              /*
-               * LCP IMAGE
-               */
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
+          <Image
+            width={420}
+            height={420}
+            src={imageSrc}
+            alt={item.title || "Product"}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
           </ImgContainer>
 
           <Content>
