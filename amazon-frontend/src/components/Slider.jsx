@@ -5,42 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cartContext";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
 
-/* =========================================================
-   IMPORTANT LCP PRELOAD
-   ========================================================= */
-
-/*
- * This is the current first hero image returned by your
- * /api/products/hero endpoint.
- *
- * We preload it immediately instead of waiting for the
- * Hero API response.
- */
-const FIRST_HERO_IMAGE =
-  "https://g.sdlcdn.com/imgs/l/d/i/Nexra-Creation-Cotton-Blend-Regular-SDL820192292-1-00da6.jpg?w=220&h=258&sharp=7";
-
-/*
- * Add preload only once.
- *
- * This runs as soon as this module is evaluated,
- * instead of waiting for useEffect + API response.
- */
-if (
-  typeof document !== "undefined" &&
-  !document.querySelector(
-    `link[rel="preload"][href="${FIRST_HERO_IMAGE}"]`
-  )
-) {
-  const preload = document.createElement("link");
-
-  preload.rel = "preload";
-  preload.as = "image";
-  preload.href = FIRST_HERO_IMAGE;
-  preload.fetchPriority = "high";
-
-  document.head.appendChild(preload);
-}
-
 /* ================= CONTAINER ================= */
 
 export const Container = styled.div`
@@ -48,12 +12,7 @@ export const Container = styled.div`
   height: 560px;
   position: relative;
   overflow: hidden;
-
-  background: linear-gradient(
-    135deg,
-    #f7f9fc 0%,
-    #edf2f7 100%
-  );
+  background: linear-gradient(135deg, #f7f9fc 0%, #edf2f7 100%);
 
   @media (max-width: 1024px) {
     height: 520px;
@@ -79,7 +38,6 @@ export const Wrapper = styled.div`
   );
 
   transition: transform 0.8s ease;
-
   will-change: transform;
 `;
 
@@ -160,18 +118,12 @@ export const Circle = styled.div`
   }
 `;
 
-/*
- * Removed CSS filter from the LCP image.
- *
- * drop-shadow can add extra paint/compositing work.
- */
 export const Image = styled.img`
   position: relative;
   z-index: 2;
 
   width: 100%;
   max-width: 420px;
-
   height: 420px;
 
   object-fit: contain;
@@ -190,7 +142,6 @@ export const Content = styled.div`
 
   display: flex;
   flex-direction: column;
-
   gap: 18px;
 
   min-width: 0;
@@ -206,7 +157,6 @@ export const Content = styled.div`
     flex: none;
 
     padding: 0 10px;
-
     box-sizing: border-box;
 
     text-align: center;
@@ -259,7 +209,6 @@ export const Title = styled.h1`
     height: auto;
 
     font-size: 25px;
-
     line-height: 1.25;
 
     -webkit-line-clamp: 3;
@@ -274,7 +223,6 @@ export const Rating = styled.div`
   color: #ffa41c;
 
   font-size: 19px;
-
   font-weight: 600;
 
   @media (max-width: 768px) {
@@ -288,7 +236,6 @@ export const Desc = styled.p`
   width: 100%;
 
   font-size: 18px;
-
   line-height: 1.7;
 
   color: #555;
@@ -300,7 +247,6 @@ export const Desc = styled.p`
   display: -webkit-box;
 
   -webkit-line-clamp: 3;
-
   -webkit-box-orient: vertical;
 
   margin: 0;
@@ -309,7 +255,6 @@ export const Desc = styled.p`
     height: auto;
 
     font-size: 15px;
-
     line-height: 1.5;
 
     -webkit-line-clamp: 3;
@@ -324,13 +269,11 @@ export const FeatureRow = styled.div`
   display: flex;
 
   gap: 18px;
-
   flex-wrap: wrap;
 
   color: #007600;
 
   font-size: 15px;
-
   font-weight: 600;
 
   @media (max-width: 768px) {
@@ -355,7 +298,6 @@ export const PriceRow = styled.div`
     width: 100%;
 
     justify-content: center;
-
     align-items: center;
 
     flex-wrap: wrap;
@@ -425,7 +367,6 @@ export const ButtonRow = styled.div`
     gap: 10px;
 
     margin-top: 0;
-
     padding-top: 10px;
   }
 `;
@@ -440,7 +381,6 @@ export const CartButton = styled.button`
   background: #ffd814;
 
   font-size: 17px;
-
   font-weight: 700;
 
   cursor: pointer;
@@ -458,7 +398,6 @@ export const BuyButton = styled.button`
   color: white;
 
   font-size: 17px;
-
   font-weight: 700;
 
   cursor: pointer;
@@ -481,7 +420,6 @@ export const Arrow = styled.div`
   transform: translateY(-50%);
 
   display: flex;
-
   justify-content: center;
   align-items: center;
 
@@ -514,9 +452,7 @@ export const Arrow = styled.div`
   }
 `;
 
-/* =========================================================
-   SLIDER
-   ========================================================= */
+/* ================= SLIDER ================= */
 
 export default function Slider() {
   const [slides, setSlides] = useState([]);
@@ -547,9 +483,7 @@ export default function Slider() {
 
     const fetchHero = async () => {
       try {
-        const res = await axios.get(
-          HERO_API
-        );
+        const res = await axios.get(HERO_API);
 
         if (cancelled) return;
 
@@ -576,69 +510,48 @@ export default function Slider() {
     };
   }, []);
 
-  /* =========================================================
-     PRELOAD REMAINING SLIDES
-     ========================================================= */
+  /* ================= PRELOAD NEXT SLIDES ================= */
 
   useEffect(() => {
     if (slides.length <= 1) return;
 
-    /*
-     * Don't preload immediately.
-     *
-     * The first image has priority.
-     * Other images are only prepared after
-     * the initial page has had time to render.
-     */
     const timer = setTimeout(() => {
-      slides
-        .slice(1)
-        .forEach((slide) => {
-          if (!slide.img) return;
+      slides.slice(1).forEach((slide) => {
+        if (!slide.img) return;
 
-          const img =
-            new window.Image();
+        const img = new window.Image();
 
-          img.src = slide.img;
-        });
+        img.src = slide.img;
+      });
     }, 1500);
 
-    return () =>
-      clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [slides]);
 
   /* ================= AUTO SLIDER ================= */
 
   const stopAuto = useCallback(() => {
-    clearInterval(
-      intervalRef.current
-    );
+    clearInterval(intervalRef.current);
   }, []);
 
   const startAuto = useCallback(() => {
     if (slides.length <= 1) return;
 
-    clearInterval(
-      intervalRef.current
-    );
+    clearInterval(intervalRef.current);
 
-    intervalRef.current =
-      setInterval(() => {
-        setIndex(
-          (prev) =>
-            (prev + 1) %
-            slides.length
-        );
-      }, 4000);
+    intervalRef.current = setInterval(() => {
+      setIndex(
+        (prev) =>
+          (prev + 1) % slides.length
+      );
+    }, 4000);
   }, [slides.length]);
 
   useEffect(() => {
     startAuto();
 
     return () => {
-      clearInterval(
-        intervalRef.current
-      );
+      clearInterval(intervalRef.current);
     };
   }, [startAuto]);
 
@@ -651,14 +564,10 @@ export default function Slider() {
 
     setIndex(
       (prev) =>
-        (prev + 1) %
-        slides.length
+        (prev + 1) % slides.length
     );
 
-    setTimeout(
-      startAuto,
-      200
-    );
+    setTimeout(startAuto, 200);
   };
 
   /* ================= PREVIOUS ================= */
@@ -674,10 +583,7 @@ export default function Slider() {
         : prev - 1
     );
 
-    setTimeout(
-      startAuto,
-      200
-    );
+    setTimeout(startAuto, 200);
   };
 
   /* ================= ADD TO CART ================= */
@@ -688,10 +594,7 @@ export default function Slider() {
   ) => {
     e.stopPropagation();
 
-    if (
-      !currentUser ||
-      !userId
-    ) {
+    if (!currentUser || !userId) {
       alert(
         "Please sign in to add items to your cart."
       );
@@ -702,14 +605,13 @@ export default function Slider() {
     }
 
     try {
-      const res =
-        await axios.post(
-          "https://amazon-7t4h.onrender.com/api/cart",
-          {
-            userId,
-            productId,
-          }
-        );
+      const res = await axios.post(
+        "https://amazon-7t4h.onrender.com/api/cart",
+        {
+          userId,
+          productId,
+        }
+      );
 
       await fetchCart();
 
@@ -718,9 +620,7 @@ export default function Slider() {
         res.data
       );
 
-      alert(
-        "Added to Cart 🛒"
-      );
+      alert("Added to Cart 🛒");
     } catch (err) {
       console.error(
         "Slider Add to Cart error:",
@@ -753,8 +653,7 @@ export default function Slider() {
 
   /* ================= CURRENT SLIDE ================= */
 
-  const currentSlide =
-    slides[index];
+  const currentSlide = slides[index];
 
   const imageSrc =
     currentSlide?.img &&
@@ -779,25 +678,22 @@ export default function Slider() {
       </Arrow>
 
       <Wrapper $index={index}>
-        {/* =================================================
-            ONLY RENDER CURRENT SLIDE
-
-            This is important for initial rendering.
-            ================================================= */}
-
         <Slide>
           <ImgContainer>
             <Circle />
 
-          <Image
-            width={420}
-            height={420}
-            src={imageSrc}
-            alt={item.title || "Product"}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
+            <Image
+              width={420}
+              height={420}
+              src={imageSrc}
+              alt={
+                currentSlide?.title ||
+                "Product"
+              }
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
           </ImgContainer>
 
           <Content>
