@@ -114,9 +114,7 @@ router.get("/suggest", async (req, res) => {
       .limit(20)
       .lean();
 
-    const results = products.slice(0, 8);
-
-    res.json(results);
+    res.json(products.slice(0, 8));
   } catch (err) {
     console.error("Suggest error:", err);
 
@@ -182,19 +180,13 @@ router.get("/search", async (req, res) => {
 
       let s = 0;
 
-      /* EXACT MATCH */
-
       if (title === query) {
         return 100000;
       }
 
-      /* PREFIX MATCH */
-
       if (title.startsWith(query)) {
         s += 10000;
       }
-
-      /* PHONE INTENT */
 
       if (isPhoneQuery) {
         if (
@@ -213,8 +205,6 @@ router.get("/search", async (req, res) => {
         }
       }
 
-      /* SHIRT INTENT */
-
       if (isShirtQuery) {
         if (
           title.includes("shirt") ||
@@ -230,8 +220,6 @@ router.get("/search", async (req, res) => {
           s -= 10000;
         }
       }
-
-      /* TOKEN MATCH */
 
       tokens.forEach((t) => {
         if (title.includes(t)) {
@@ -250,8 +238,6 @@ router.get("/search", async (req, res) => {
           s += 200;
         }
       });
-
-      /* PRIORITY RULE */
 
       if (
         categories.includes("shirt") &&
@@ -318,13 +304,23 @@ router.get("/", async (req, res) => {
       sort = "featured",
     } = req.query;
 
+    const pageNumber = Math.max(
+      Number(page) || 1,
+      1
+    );
+
+    const limitNumber = Math.min(
+      Math.max(Number(limit) || 24, 1),
+      50
+    );
+
     const filter = {};
 
     /* SEARCH */
 
-    if (search) {
+    if (search.trim()) {
       filter.title = {
-        $regex: search,
+        $regex: search.trim(),
         $options: "i",
       };
     }
@@ -339,7 +335,10 @@ router.get("/", async (req, res) => {
 
     if (brands) {
       filter.brand = {
-        $in: brands.split(","),
+        $in: brands
+          .split(",")
+          .map((brand) => brand.trim())
+          .filter(Boolean),
       };
     }
 
@@ -348,11 +347,17 @@ router.get("/", async (req, res) => {
     if (minPrice || maxPrice) {
       filter.price = {};
 
-      if (minPrice !== undefined && minPrice !== "") {
+      if (
+        minPrice !== undefined &&
+        minPrice !== ""
+      ) {
         filter.price.$gte = Number(minPrice);
       }
 
-      if (maxPrice !== undefined && maxPrice !== "") {
+      if (
+        maxPrice !== undefined &&
+        maxPrice !== ""
+      ) {
         filter.price.$lte = Number(maxPrice);
       }
     }
@@ -414,48 +419,47 @@ router.get("/", async (req, res) => {
         sortOption = {};
     }
 
-    let products = await Product.find(filter)
-      .sort(sortOption)
-      .lean();
-
-    /* FAKE RATING FILTER */
-
-    if (rating) {
-      products = products.filter((product) => {
-        const productRating =
-          4 +
-          ((Number(product.price) || 299) % 10) /
-            10;
-
-        return (
-          productRating >= Number(rating)
-        );
-      });
-    }
-
-    const total = products.length;
-
     /* PAGINATION */
 
-    products = products.slice(
-      (Number(page) - 1) *
-        Number(limit),
-      Number(page) * Number(limit)
-    );
+    const skip =
+      (pageNumber - 1) * limitNumber;
+
+    /*
+     * Fetch only the products required
+     * for the current page.
+     *
+     * Count and product query run
+     * concurrently.
+     */
+
+    const [products, total] =
+      await Promise.all([
+        Product.find(filter)
+          .sort(sortOption)
+          .skip(skip)
+          .limit(limitNumber)
+          .lean(),
+
+        Product.countDocuments(filter),
+      ]);
 
     res.json({
       products,
       total,
-      page: Number(page),
+      page: pageNumber,
       pages: Math.ceil(
-        total / Number(limit)
+        total / limitNumber
       ),
     });
   } catch (err) {
-    console.error("Products error:", err);
+    console.error(
+      "Products error:",
+      err
+    );
 
     res.status(500).json({
-      message: "Failed to fetch products",
+      message:
+        "Failed to fetch products",
     });
   }
 });
