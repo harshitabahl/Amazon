@@ -487,10 +487,9 @@ export default function Slider() {
 
         if (cancelled) return;
 
-        const heroSlides =
-          Array.isArray(res.data)
-            ? res.data.slice(0, 5)
-            : [];
+        const heroSlides = Array.isArray(res.data)
+          ? res.data.slice(0, 5)
+          : [];
 
         setSlides(heroSlides);
       } catch (err) {
@@ -509,24 +508,6 @@ export default function Slider() {
       cancelled = true;
     };
   }, []);
-
-  /* ================= PRELOAD NEXT SLIDES ================= */
-
-  useEffect(() => {
-    if (slides.length <= 1) return;
-
-    const timer = setTimeout(() => {
-      slides.slice(1).forEach((slide) => {
-        if (!slide.img) return;
-
-        const img = new window.Image();
-
-        img.src = slide.img;
-      });
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [slides]);
 
   /* ================= AUTO SLIDER ================= */
 
