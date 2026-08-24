@@ -10,7 +10,6 @@ const HOME_API =
 
 const Home = () => {
   const [homeData, setHomeData] = useState({
-    hero: [],
     recommended: [],
     clothing: [],
     shoes: [],
@@ -21,6 +20,11 @@ const Home = () => {
     trending: [],
   });
 
+  const [showCategories, setShowCategories] =
+    useState(false);
+
+  /* ================= FALLBACK IMAGE ================= */
+
   const addFallbackImage = (products = []) => {
     if (!Array.isArray(products)) return [];
 
@@ -30,9 +34,13 @@ const Home = () => {
         typeof product?.img === "string" &&
         product.img.trim()
           ? product.img
-          : getPlaceholderImage(product?.title || ""),
+          : getPlaceholderImage(
+              product?.title || ""
+            ),
     }));
   };
+
+  /* ================= FETCH HOME DATA ================= */
 
   useEffect(() => {
     let cancelled = false;
@@ -46,21 +54,24 @@ const Home = () => {
         const data = res.data || {};
 
         setHomeData({
-          hero: addFallbackImage(data.hero),
           recommended: addFallbackImage(
             data.recommended
           ),
           clothing: addFallbackImage(
             data.clothing
           ),
-          shoes: addFallbackImage(data.shoes),
+          shoes: addFallbackImage(
+            data.shoes
+          ),
           electronics: addFallbackImage(
             data.electronics
           ),
           watches: addFallbackImage(
             data.watches
           ),
-          bags: addFallbackImage(data.bags),
+          bags: addFallbackImage(
+            data.bags
+          ),
           homeKitchen: addFallbackImage(
             data.homeKitchen
           ),
@@ -85,54 +96,92 @@ const Home = () => {
     };
   }, []);
 
+  /* ================= DEFER CATEGORY RENDER ================= */
+
+  useEffect(() => {
+    /*
+     * Let Navbar + Slider get their first
+     * rendering opportunity before mounting
+     * all 8 category rows / ProductCards.
+     */
+    const timer = setTimeout(() => {
+      setShowCategories(true);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  /* ================= UI ================= */
+
   return (
     <div>
       <Navbar />
 
-      {/* HERO */}
-      <Slider slides={homeData.hero} />
+      {/* HERO - rendered immediately */}
+      <Slider />
 
-      {/* CATEGORY ROWS */}
+      {/* CATEGORIES - rendered after initial paint */}
+      {showCategories && (
+        <>
+          <CategoryRow
+            title="Recommended for You"
+            products={
+              homeData.recommended
+            }
+          />
 
-      <CategoryRow
-        title="Recommended for You"
-        products={homeData.recommended}
-      />
+          <CategoryRow
+            title="Clothing"
+            products={
+              homeData.clothing
+            }
+          />
 
-      <CategoryRow
-        title="Clothing"
-        products={homeData.clothing}
-      />
+          <CategoryRow
+            title="Shoes"
+            products={
+              homeData.shoes
+            }
+          />
 
-      <CategoryRow
-        title="Shoes"
-        products={homeData.shoes}
-      />
+          <CategoryRow
+            title="Electronics"
+            products={
+              homeData.electronics
+            }
+          />
 
-      <CategoryRow
-        title="Electronics"
-        products={homeData.electronics}
-      />
+          <CategoryRow
+            title="Watches"
+            products={
+              homeData.watches
+            }
+          />
 
-      <CategoryRow
-        title="Watches"
-        products={homeData.watches}
-      />
+          <CategoryRow
+            title="Accessories"
+            products={
+              homeData.bags
+            }
+          />
 
-      <CategoryRow
-        title="Accessories"
-        products={homeData.bags}
-      />
+          <CategoryRow
+            title="Home & Kitchen"
+            products={
+              homeData.homeKitchen
+            }
+          />
 
-      <CategoryRow
-        title="Home & Kitchen"
-        products={homeData.homeKitchen}
-      />
-
-      <CategoryRow
-        title="Trending Deals"
-        products={homeData.trending}
-      />
+          <CategoryRow
+            title="Trending Deals"
+            products={
+              homeData.trending
+            }
+          />
+        </>
+      )}
     </div>
   );
 };
