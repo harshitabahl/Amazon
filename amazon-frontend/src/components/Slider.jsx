@@ -122,9 +122,9 @@ export const Image = styled.img`
   position: relative;
   z-index: 2;
 
-  width: 100%;
-  max-width: 420px;
+  width: 420px;
   height: 420px;
+  max-width: 100%;
 
   object-fit: contain;
 
