@@ -233,7 +233,6 @@ export const Rating = styled.div`
 
   @media (max-width: 768px) {
     font-size: 16px;
-
     white-space: normal;
   }
 `;
@@ -507,19 +506,33 @@ export default function Slider() {
   /* ================= FETCH HERO PRODUCTS ================= */
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchHero = async () => {
       try {
         const res = await axios.get(
           "https://amazon-7t4h.onrender.com/api/products/hero"
         );
 
-        setSlides(res.data.slice(0, 5));
+        if (cancelled) return;
+
+        // Only keep the 5 products actually used by slider
+        const heroSlides = res.data.slice(0, 5);
+
+        setSlides(heroSlides);
+
       } catch (err) {
-        console.error("Hero products error:", err);
+        if (!cancelled) {
+          console.error("Hero products error:", err);
+        }
       }
     };
 
     fetchHero();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   /* ================= AUTO SLIDER ================= */
@@ -634,112 +647,129 @@ export default function Slider() {
       </Arrow>
 
       <Wrapper $index={index}>
-        {slides.map((item) => (
-          <Slide key={item._id}>
+        {slides.map((item, slideIndex) => {
+          const imageSrc =
+            item.img && item.img.trim() !== ""
+              ? item.img
+              : getPlaceholderImage(item.title);
 
-            {/* IMAGE */}
+          return (
+            <Slide key={item._id}>
 
-            <ImgContainer>
-              <Circle />
+              {/* IMAGE */}
 
-              <Image
-                src={
-                  item.img && item.img.trim() !== ""
-                    ? item.img
-                    : getPlaceholderImage(item.title)
-                }
-                alt={item.title}
-              />
-            </ImgContainer>
+              <ImgContainer>
+                <Circle />
 
-            {/* CONTENT */}
+                <Image
+                  width="420"
+                  height="420"
+                  src={imageSrc}
+                  alt={item.title}
+                  
+                  /* PERFORMANCE:
+                      First slide is the initial LCP candidate.
+                  */
+                  loading={
+                    slideIndex === 0 ? "eager" : "lazy"
+                  }
+                  fetchPriority={
+                    slideIndex === 0 ? "high" : "low"
+                  }
 
-            <Content>
+                  decoding={
+                    slideIndex === 0 ? "sync" : "async"
+                  }
+                />
+              </ImgContainer>
 
-              <Badge>
-                Limited Time Deal
-              </Badge>
+              {/* CONTENT */}
 
-              <Title
-                onClick={() =>
-                  navigate(`/product/${item._id}`)
-                }
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                {item.title}
-              </Title>
+              <Content>
 
-              <Rating>
-                ⭐⭐⭐⭐⭐{" "}
-                <span
+                <Badge>
+                  Limited Time Deal
+                </Badge>
+
+                <Title
+                  onClick={() =>
+                    navigate(`/product/${item._id}`)
+                  }
                   style={{
-                    color: "#007185",
+                    cursor: "pointer",
                   }}
                 >
-                  4.5 (128 Reviews)
-                </span>
-              </Rating>
+                  {item.title}
+                </Title>
 
-              <PriceRow>
-                <Price>
-                  ₹{item.price}
-                </Price>
+                <Rating>
+                  ⭐⭐⭐⭐⭐{" "}
+                  <span
+                    style={{
+                      color: "#007185",
+                    }}
+                  >
+                    4.5 (128 Reviews)
+                  </span>
+                </Rating>
 
-                <OldPrice>
-                  ₹999
-                </OldPrice>
+                <PriceRow>
+                  <Price>
+                    ₹{item.price}
+                  </Price>
 
-                <Discount>
-                  60% OFF
-                </Discount>
-              </PriceRow>
+                  <OldPrice>
+                    ₹999
+                  </OldPrice>
 
-              <Desc>
-                {item.desc}
-              </Desc>
+                  <Discount>
+                    60% OFF
+                  </Discount>
+                </PriceRow>
 
-              <FeatureRow>
-                <span>
-                  ✓ Free Delivery
-                </span>
+                <Desc>
+                  {item.desc}
+                </Desc>
 
-                <span>
-                  ✓ Easy Returns
-                </span>
+                <FeatureRow>
+                  <span>
+                    ✓ Free Delivery
+                  </span>
 
-                <span>
-                  ✓ Cash on Delivery
-                </span>
-              </FeatureRow>
+                  <span>
+                    ✓ Easy Returns
+                  </span>
 
-              <ButtonRow>
+                  <span>
+                    ✓ Cash on Delivery
+                  </span>
+                </FeatureRow>
 
-                <CartButton
-                  onClick={(e) =>
-                    addToCart(e, item._id)
-                  }
-                >
-                  Add to Cart
-                </CartButton>
+                <ButtonRow>
 
-                <BuyButton
-                  onClick={() =>
-                    navigate(
-                      `/product/${item._id}`
-                    )
-                  }
-                >
-                  View Details
-                </BuyButton>
+                  <CartButton
+                    onClick={(e) =>
+                      addToCart(e, item._id)
+                    }
+                  >
+                    Add to Cart
+                  </CartButton>
 
-              </ButtonRow>
+                  <BuyButton
+                    onClick={() =>
+                      navigate(`/product/${item._id}`)
+                    }
+                  >
+                    View Details
+                  </BuyButton>
 
-            </Content>
+                </ButtonRow>
 
-          </Slide>
-        ))}
+              </Content>
+
+            </Slide>
+          );
+        })}
       </Wrapper>
 
       <Arrow right onClick={next}>
