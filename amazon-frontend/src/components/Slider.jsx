@@ -464,27 +464,9 @@ export default function Slider() {
 
         if (cancelled) return;
 
-        const heroSlides = res.data.slice(0, 5);
-
-        /* ================= PRELOAD FIRST HERO IMAGE ================= */
-
-        const firstImage = heroSlides[0]?.img;
-
-        if (firstImage) {
-          const existingPreload = document.querySelector(
-            `link[rel="preload"][href="${firstImage}"]`
-          );
-
-          if (!existingPreload) {
-            const preload = document.createElement("link");
-
-            preload.rel = "preload";
-            preload.as = "image";
-            preload.href = firstImage;
-
-            document.head.appendChild(preload);
-          }
-        }
+        const heroSlides = Array.isArray(res.data)
+          ? res.data.slice(0, 5)
+          : [];
 
         setSlides(heroSlides);
       } catch (err) {
