@@ -2,12 +2,16 @@ const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const Address = require("../models/Address");
 
+// ================= PLACE ORDER =================
+
 const placeOrder = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = String(req.body.userId);
 
     // Get user's cart
-    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    const cart = await Cart.findOne({ userId }).populate(
+      "items.productId"
+    );
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({
@@ -24,28 +28,32 @@ const placeOrder = async (req, res) => {
       });
     }
 
-   const FALLBACK_IMAGE =
-  "https://via.placeholder.com/300x400?text=Product";
+    // Fallback image
+    const FALLBACK_IMAGE =
+      "https://via.placeholder.com/300x400?text=Product";
 
-const products = cart.items.map((item) => {
-  const image =
-    item.productId.img?.trim() || FALLBACK_IMAGE;
-  return {
-    productId: item.productId._id.toString(),
-    title: item.productId.title,
-    image,
-    price: item.productId.price,
-    quantity: item.quantity,
-  };
-});
+    // Prepare products
+    const products = cart.items.map((item) => {
+      const image =
+        item.productId.img?.trim() || FALLBACK_IMAGE;
 
+      return {
+        productId: item.productId._id.toString(),
+        title: item.productId.title,
+        image,
+        price: item.productId.price,
+        quantity: item.quantity,
+      };
+    });
 
+    // Calculate amount
     const amount = cart.items.reduce(
       (sum, item) =>
         sum + item.productId.price * item.quantity,
       0
     );
 
+    // Create order
     const order = await Order.create({
       userId,
       products,
@@ -56,18 +64,23 @@ const products = cart.items.map((item) => {
 
     res.status(201).json(order);
   } catch (err) {
-    console.error(err);
+    console.error("Place order error:", err);
+
     res.status(500).json({
       message: "Failed to place order",
     });
   }
 };
+
+// ================= GET USER ORDERS =================
+
 const getUserOrders = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = String(req.params.userId);
 
-    const orders = await Order.find({ userId })
-      .sort({ createdAt: -1 });
+    const orders = await Order.find({ userId }).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json(orders);
   } catch (err) {
@@ -78,6 +91,8 @@ const getUserOrders = async (req, res) => {
     });
   }
 };
+
+// ================= EXPORT =================
 
 module.exports = {
   placeOrder,
