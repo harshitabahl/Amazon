@@ -62,7 +62,24 @@ const products = cart.items.map((item) => {
     });
   }
 };
+const getUserOrders = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const orders = await Order.find({ userId })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error("Get orders error:", err);
+
+    res.status(500).json({
+      message: "Failed to fetch orders",
+    });
+  }
+};
 
 module.exports = {
   placeOrder,
+  getUserOrders,
 };
