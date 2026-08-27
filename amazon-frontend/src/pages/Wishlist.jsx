@@ -11,6 +11,7 @@ const Wishlist = () => {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
@@ -28,16 +29,30 @@ const Wishlist = () => {
       }
 
       try {
+        setError("");
+
         const res = await axios.get(
           `${API_URL}/api/wishlist/${userId}`
         );
 
-        setProducts(res.data.products || []);
+        console.log(
+          "🔥 Wishlist response:",
+          res.data
+        );
+
+        setProducts(
+          Array.isArray(res.data?.products)
+            ? res.data.products
+            : []
+        );
       } catch (err) {
         console.error(
           "Failed to fetch wishlist:",
           err
         );
+
+        setError("Failed to load wishlist");
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -49,6 +64,8 @@ const Wishlist = () => {
   // ================= REMOVE =================
 
   const removeFromWishlist = async (productId) => {
+    if (!userId || !productId) return;
+
     try {
       await axios.delete(
         `${API_URL}/api/wishlist/${userId}/${productId}`
@@ -56,7 +73,9 @@ const Wishlist = () => {
 
       setProducts((prev) =>
         prev.filter(
-          (product) => product._id !== productId
+          (product) =>
+            String(product._id) !==
+            String(productId)
         )
       );
     } catch (err) {
@@ -101,13 +120,18 @@ const Wishlist = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
+          <Heart
+            size={50}
+            className="mx-auto mb-4 text-gray-300"
+          />
+
           <h2 className="text-2xl font-semibold mb-4">
             Please login to view your wishlist
           </h2>
 
           <Link
             to="/login"
-            className="bg-yellow-400 px-6 py-2 rounded-md"
+            className="inline-block bg-yellow-400 px-6 py-2 rounded-md hover:bg-yellow-500"
           >
             Login
           </Link>
@@ -121,7 +145,9 @@ const Wishlist = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p>Loading wishlist...</p>
+        <p className="text-gray-600">
+          Loading wishlist...
+        </p>
       </div>
     );
   }
@@ -133,8 +159,10 @@ const Wishlist = () => {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
+
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3">
+
             <Heart
               size={28}
               fill="red"
@@ -144,6 +172,7 @@ const Wishlist = () => {
             <h1 className="text-3xl font-semibold">
               Your Wishlist
             </h1>
+
           </div>
 
           {products.length > 0 && (
@@ -157,8 +186,29 @@ const Wishlist = () => {
           )}
         </div>
 
+        {/* Error */}
+
+        {error && (
+          <div className="bg-white rounded-lg p-8 text-center">
+            <p className="text-red-600 mb-4">
+              {error}
+            </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                window.location.reload()
+              }
+              className="bg-yellow-400 px-6 py-2 rounded-md"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
         {/* Empty Wishlist */}
-        {products.length === 0 ? (
+
+        {!error && products.length === 0 && (
           <div className="bg-white rounded-lg shadow-sm p-10 text-center">
 
             <Heart
@@ -183,8 +233,11 @@ const Wishlist = () => {
             </Link>
 
           </div>
-        ) : (
-          /* Products */
+        )}
+
+        {/* Products */}
+
+        {!error && products.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {products.map((product) => {
@@ -194,15 +247,19 @@ const Wishlist = () => {
               return (
                 <div
                   key={product._id}
-                  className="bg-white rounded-lg shadow-sm p-5"
+                  className="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition"
                 >
 
                   <div className="flex gap-5">
 
                     {/* Image */}
+
                     <img
                       src={getImage(product)}
-                      alt={product.title}
+                      alt={
+                        product?.title ||
+                        "Product"
+                      }
                       className="w-32 h-36 object-contain border rounded-md cursor-pointer"
                       onClick={() =>
                         navigate(
@@ -215,16 +272,17 @@ const Wishlist = () => {
 
                         e.currentTarget.src =
                           getPlaceholderImage(
-                            product.title || ""
+                            product?.title || ""
                           );
                       }}
                     />
 
                     {/* Details */}
-                    <div className="flex-1">
+
+                    <div className="flex-1 min-w-0">
 
                       <p className="text-sm text-gray-500 mb-1">
-                        {product.brand ||
+                        {product?.brand ||
                           "Amazon Brand"}
                       </p>
 
@@ -236,20 +294,21 @@ const Wishlist = () => {
                           )
                         }
                       >
-                        {product.title}
+                        {product?.title}
                       </h2>
 
                       <p className="text-xl font-semibold mt-3">
                         ₹{price}
                       </p>
 
-                      {product.inStock === false && (
+                      {product?.inStock === false && (
                         <p className="text-red-600 text-sm mt-2">
                           Currently unavailable
                         </p>
                       )}
 
                       {/* Remove */}
+
                       <button
                         type="button"
                         onClick={() =>
