@@ -37,7 +37,8 @@ function ProductCard({ product }) {
         const wishlistProducts = res.data.products || [];
 
         const exists = wishlistProducts.some(
-          (item) => item._id === product._id
+          (item) =>
+            String(item._id) === String(product._id)
         );
 
         setIsWishlisted(exists);
@@ -78,7 +79,10 @@ function ProductCard({ product }) {
         setIsWishlisted(false);
       }
     } catch (err) {
-      console.error("Wishlist error:", err);
+      console.error(
+        "Wishlist error:",
+        err
+      );
 
       alert(
         err.response?.data?.message ||
@@ -93,7 +97,10 @@ function ProductCard({ product }) {
     100 +
     (parseInt(product?._id?.slice(-2), 16) % 400 || 0);
 
-  const rating = (4 + (price % 10) / 10).toFixed(1);
+  const rating = (
+    4 +
+    (price % 10) / 10
+  ).toFixed(1);
 
   const oldPrice = Math.round(price * 2.7);
 
@@ -130,7 +137,10 @@ function ProductCard({ product }) {
     e.stopPropagation();
 
     if (!currentUser || !userId) {
-      alert("Please sign in to add items to your cart.");
+      alert(
+        "Please sign in to add items to your cart."
+      );
+
       navigate("/login");
       return;
     }
@@ -146,9 +156,15 @@ function ProductCard({ product }) {
 
       await fetchCart();
 
-      console.log("Added to cart:", res.data);
+      console.log(
+        "Added to cart:",
+        res.data
+      );
     } catch (err) {
-      console.error("Add to cart error:", err);
+      console.error(
+        "Add to cart error:",
+        err
+      );
 
       alert("Failed to add to cart");
     }
@@ -160,7 +176,9 @@ function ProductCard({ product }) {
     <div
       className="card"
       onClick={() =>
-        navigate(`/product/${product._id}`)
+        navigate(
+          `/product/${product._id}`
+        )
       }
     >
       <div className="image-container">
@@ -195,14 +213,18 @@ function ProductCard({ product }) {
         <img
           className="product-image"
           src={getImage()}
-          alt={product?.title || "Product"}
+          alt={
+            product?.title ||
+            "Product"
+          }
           width="420"
           height="420"
           loading="lazy"
           fetchPriority="low"
           decoding="async"
           onError={(e) => {
-            e.currentTarget.onerror = null;
+            e.currentTarget.onerror =
+              null;
 
             e.currentTarget.src =
               getPlaceholderImage(
@@ -216,7 +238,8 @@ function ProductCard({ product }) {
 
         {/* Brand */}
         <div className="brand">
-          {product?.brand || "Amazon Brand"}
+          {product?.brand ||
+            "Amazon Brand"}
         </div>
 
         {/* Title */}
@@ -234,7 +257,9 @@ function ProductCard({ product }) {
           </span>
 
           <span className="rating-count">
-            ({reviews.toLocaleString()})
+            (
+            {reviews.toLocaleString()}
+            )
           </span>
         </div>
 
@@ -255,7 +280,9 @@ function ProductCard({ product }) {
 
         {/* Delivery */}
         <div className="delivery">
-          <strong>FREE Delivery</strong>{" "}
+          <strong>
+            FREE Delivery
+          </strong>{" "}
           Tomorrow
         </div>
 
