@@ -10,6 +10,7 @@ const filterRoute = require("./routes/filter");
 const cartRoutes = require("./routes/cart");
 const addressRoute = require("./routes/address");
 const orderRoute = require("./routes/order");
+const wishlistRoute = require("./routes/wishlist");
 
 
 require("dotenv").config();
@@ -65,6 +66,7 @@ app.use("/api/filters", filterRoute);
 app.use("/api/cart", cartRoutes);
 app.use("/api/address", addressRoute);
 app.use("/api/orders", orderRoute);
+app.use("/api/wishlist", wishlistRoute);
 
 // ================= DATABASE =================
 
