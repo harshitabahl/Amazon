@@ -6,6 +6,12 @@ import { mobile } from "../responsive";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../context/cartContext";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+const PersonIcon = styled(PersonOutlineIcon)`
+  && {
+    font-size: 25px;
+  }
+`;
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -181,12 +187,45 @@ const MenuItem = styled.div`
   `}
 `;
 
-/* Hide authentication text on mobile */
-
 const AuthItem = styled(MenuItem)`
   ${mobile`
     display: none;
   `}
+`;
+
+/* ================= AMAZON STYLE PROFILE ================= */
+
+const ProfileItem = styled.div`
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+
+  ${mobile`
+    display: none;
+  `}
+`;
+
+const NavbarProfileCircle = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  background: #ffd814;
+  color: #111;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  border: 1px solid #f0b800;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f7ca00;
+    transform: scale(1.05);
+  }
 `;
 
 /* ================= CART ================= */
@@ -246,7 +285,7 @@ const Navbar = () => {
     <Container>
       <Wrapper>
 
-        {/* ================= LOGO ================= */}
+        {/* LOGO */}
 
         <Left>
           <StyledLink to="/">
@@ -254,7 +293,7 @@ const Navbar = () => {
           </StyledLink>
         </Left>
 
-        {/* ================= SEARCH ================= */}
+        {/* SEARCH */}
 
         <Center>
           <SearchContainer>
@@ -277,9 +316,21 @@ const Navbar = () => {
           </SearchContainer>
         </Center>
 
-        {/* ================= RIGHT ================= */}
+        {/* RIGHT */}
 
         <Right>
+
+          {/* AMAZON STYLE ACCOUNT */}
+
+          {currentUser && (
+          <ProfileItem>
+            <StyledLink to="/profile">
+              <NavbarProfileCircle>
+                <PersonIcon />
+              </NavbarProfileCircle>
+            </StyledLink>
+          </ProfileItem>
+        )}
 
           {/* AUTH */}
 

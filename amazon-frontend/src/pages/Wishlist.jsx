@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, Trash2 } from "lucide-react";
 import { getPlaceholderImage } from "../placeholder/categoryPlaceholder";
+import "../styles/wishlist.css";
 
 const API_URL = "https://amazon-7t4h.onrender.com";
 
@@ -19,8 +20,6 @@ const Wishlist = () => {
 
   const userId = currentUser?._id || currentUser?.id;
 
-  // ================= FETCH WISHLIST =================
-
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!userId) {
@@ -35,21 +34,13 @@ const Wishlist = () => {
           `${API_URL}/api/wishlist/${userId}`
         );
 
-        console.log(
-          "🔥 Wishlist response:",
-          res.data
-        );
-
         setProducts(
           Array.isArray(res.data?.products)
             ? res.data.products
             : []
         );
       } catch (err) {
-        console.error(
-          "Failed to fetch wishlist:",
-          err
-        );
+        console.error("Failed to fetch wishlist:", err);
 
         setError("Failed to load wishlist");
         setProducts([]);
@@ -60,8 +51,6 @@ const Wishlist = () => {
 
     fetchWishlist();
   }, [userId]);
-
-  // ================= REMOVE =================
 
   const removeFromWishlist = async (productId) => {
     if (!userId || !productId) return;
@@ -74,15 +63,11 @@ const Wishlist = () => {
       setProducts((prev) =>
         prev.filter(
           (product) =>
-            String(product._id) !==
-            String(productId)
+            String(product._id) !== String(productId)
         )
       );
     } catch (err) {
-      console.error(
-        "Remove wishlist error:",
-        err
-      );
+      console.error("Remove wishlist error:", err);
 
       alert(
         err.response?.data?.message ||
@@ -90,8 +75,6 @@ const Wishlist = () => {
       );
     }
   };
-
-  // ================= IMAGE =================
 
   const getImage = (product) => {
     const img = product?.img;
@@ -114,120 +97,123 @@ const Wishlist = () => {
     return getPlaceholderImage(title);
   };
 
-  // ================= NOT LOGGED IN =================
-
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <Heart
-            size={50}
-            className="mx-auto mb-4 text-gray-300"
-          />
+      <div className="wishlist-center-page">
+        <div className="wishlist-message-card">
 
-          <h2 className="text-2xl font-semibold mb-4">
+          <div className="wishlist-login-icon">
+            <Heart size={44} />
+          </div>
+
+          <h2>
             Please login to view your wishlist
           </h2>
 
+          <p>
+            Sign in to access products you've saved.
+          </p>
+
           <Link
             to="/login"
-            className="inline-block bg-yellow-400 px-6 py-2 rounded-md hover:bg-yellow-500"
+            className="wishlist-primary-btn"
           >
             Login
           </Link>
+
         </div>
       </div>
     );
   }
 
-  // ================= LOADING =================
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-gray-600">
-          Loading wishlist...
-        </p>
+      <div className="wishlist-center-page">
+        <div className="wishlist-loading">
+          <div className="wishlist-spinner" />
+          <p>Loading wishlist...</p>
+        </div>
       </div>
     );
   }
 
-  // ================= PAGE =================
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="wishlist-page">
 
-        {/* Header */}
+      <div className="wishlist-container">
 
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-3">
+        {/* HEADER */}
 
-            <Heart
-              size={28}
-              fill="red"
-              color="red"
-            />
+        <div className="wishlist-header-card">
 
-            <h1 className="text-3xl font-semibold">
-              Your Wishlist
-            </h1>
+          <div className="wishlist-header-main">
+
+            <div className="wishlist-header-icon">
+              <Heart
+                size={27}
+                fill="currentColor"
+              />
+            </div>
+
+            <div>
+              <h1>Your Wishlist</h1>
+
+              <p>
+                Products you've saved for later
+              </p>
+            </div>
 
           </div>
 
           {products.length > 0 && (
-            <p className="text-gray-600 mt-2">
+            <div className="wishlist-count">
               {products.length}{" "}
               {products.length === 1
                 ? "item"
-                : "items"}{" "}
-              saved
-            </p>
+                : "items"}
+            </div>
           )}
+
         </div>
 
-        {/* Error */}
+        {/* ERROR */}
 
         {error && (
-          <div className="bg-white rounded-lg p-8 text-center">
-            <p className="text-red-600 mb-4">
-              {error}
-            </p>
+          <div className="wishlist-error-card">
+
+            <p>{error}</p>
 
             <button
               type="button"
-              onClick={() =>
-                window.location.reload()
-              }
-              className="bg-yellow-400 px-6 py-2 rounded-md"
+              onClick={() => window.location.reload()}
+              className="wishlist-primary-btn"
             >
               Try Again
             </button>
+
           </div>
         )}
 
-        {/* Empty Wishlist */}
+        {/* EMPTY */}
 
         {!error && products.length === 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-10 text-center">
+          <div className="wishlist-empty">
 
-            <Heart
-              size={60}
-              className="mx-auto mb-4 text-gray-300"
-            />
+            <div className="wishlist-empty-icon">
+              <Heart size={48} />
+            </div>
 
-            <h2 className="text-xl font-semibold mb-2">
+            <h2>
               Your wishlist is empty
             </h2>
 
-            <p className="text-gray-500 mb-6">
-              Save products you love to find
-              them later.
+            <p>
+              Save products you love and they'll appear here.
             </p>
 
             <Link
               to="/products"
-              className="inline-block bg-yellow-400 px-6 py-3 rounded-md font-medium hover:bg-yellow-500"
+              className="wishlist-primary-btn"
             >
               Start Shopping
             </Link>
@@ -235,10 +221,10 @@ const Wishlist = () => {
           </div>
         )}
 
-        {/* Products */}
+        {/* PRODUCTS */}
 
         {!error && products.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="wishlist-grid">
 
             {products.map((product) => {
               const price =
@@ -247,28 +233,22 @@ const Wishlist = () => {
               return (
                 <div
                   key={product._id}
-                  className="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition"
+                  className="wishlist-card"
                 >
 
-                  <div className="flex gap-5">
-
-                    {/* Image */}
+                  <div className="wishlist-image-wrap">
 
                     <img
                       src={getImage(product)}
-                      alt={
-                        product?.title ||
-                        "Product"
-                      }
-                      className="w-32 h-36 object-contain border rounded-md cursor-pointer"
+                      alt={product?.title || "Product"}
+                      className="wishlist-image"
                       onClick={() =>
                         navigate(
                           `/product/${product._id}`
                         )
                       }
                       onError={(e) => {
-                        e.currentTarget.onerror =
-                          null;
+                        e.currentTarget.onerror = null;
 
                         e.currentTarget.src =
                           getPlaceholderImage(
@@ -277,53 +257,49 @@ const Wishlist = () => {
                       }}
                     />
 
-                    {/* Details */}
+                  </div>
 
-                    <div className="flex-1 min-w-0">
+                  <div className="wishlist-card-body">
 
-                      <p className="text-sm text-gray-500 mb-1">
-                        {product?.brand ||
-                          "Amazon Brand"}
+                    <p className="wishlist-brand">
+                      {product?.brand ||
+                        "Amazon Brand"}
+                    </p>
+
+                    <h2
+                      className="wishlist-card-title"
+                      onClick={() =>
+                        navigate(
+                          `/product/${product._id}`
+                        )
+                      }
+                    >
+                      {product?.title}
+                    </h2>
+
+                    <p className="wishlist-card-price">
+                      ₹{price}
+                    </p>
+
+                    {product?.inStock === false && (
+                      <p className="wishlist-out-stock">
+                        Currently unavailable
                       </p>
+                    )}
 
-                      <h2
-                        className="font-semibold text-lg cursor-pointer hover:text-blue-600"
-                        onClick={() =>
-                          navigate(
-                            `/product/${product._id}`
-                          )
-                        }
-                      >
-                        {product?.title}
-                      </h2>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeFromWishlist(
+                          product._id
+                        )
+                      }
+                      className="wishlist-remove-btn"
+                    >
+                      <Trash2 size={17} />
+                      Remove
+                    </button>
 
-                      <p className="text-xl font-semibold mt-3">
-                        ₹{price}
-                      </p>
-
-                      {product?.inStock === false && (
-                        <p className="text-red-600 text-sm mt-2">
-                          Currently unavailable
-                        </p>
-                      )}
-
-                      {/* Remove */}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeFromWishlist(
-                            product._id
-                          )
-                        }
-                        className="flex items-center gap-2 mt-4 text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={17} />
-
-                        Remove
-                      </button>
-
-                    </div>
                   </div>
 
                 </div>

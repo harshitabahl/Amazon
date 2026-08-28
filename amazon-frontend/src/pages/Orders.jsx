@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import "../styles/orders.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -39,18 +40,28 @@ const Orders = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">
+      <div className="orders-center-page">
+        <div className="orders-message-card">
+
+          <div className="orders-message-icon">
+            📦
+          </div>
+
+          <h2>
             Please login to view your orders
           </h2>
 
+          <p>
+            Sign in to check your previous orders and delivery details.
+          </p>
+
           <Link
             to="/login"
-            className="bg-yellow-400 px-6 py-2 rounded-md"
+            className="orders-primary-btn"
           >
             Login
           </Link>
+
         </div>
       </div>
     );
@@ -60,8 +71,18 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading orders...</p>
+      <div className="orders-center-page">
+
+        <div className="orders-loading">
+
+          <div className="orders-spinner" />
+
+          <p>
+            Loading orders...
+          </p>
+
+        </div>
+
       </div>
     );
   }
@@ -69,33 +90,44 @@ const Orders = () => {
   // ================= PAGE =================
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="orders-page">
 
-        <h1 className="text-3xl font-semibold mb-6">
-          Your Orders
-        </h1>
+      <div className="orders-container">
 
-        {/* ================= EMPTY ================= */}
+        {/* HEADER */}
+
+        <div className="orders-header">
+
+          <h1>
+            Your Orders
+          </h1>
+
+          <p>
+            Track, view and manage your previous purchases
+          </p>
+
+        </div>
+
+        {/* EMPTY */}
 
         {orders.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="orders-empty">
 
-            <div className="text-5xl mb-4">
+            <div className="orders-empty-icon">
               📦
             </div>
 
-            <h2 className="text-xl font-semibold mb-2">
-              You haven't placed any orders yet.
+            <h2>
+              You haven't placed any orders yet
             </h2>
 
-            <p className="text-gray-600">
+            <p>
               Your orders will appear here after you place an order.
             </p>
 
             <Link
               to="/products"
-              className="inline-block mt-5 bg-yellow-400 px-6 py-2 rounded-md"
+              className="orders-primary-btn"
             >
               Start Shopping
             </Link>
@@ -103,98 +135,109 @@ const Orders = () => {
           </div>
         ) : (
 
-          /* ================= ORDERS ================= */
-
-          <div className="space-y-6">
+          <div className="orders-list">
 
             {orders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white rounded-lg shadow-sm p-6"
+                className="order-card"
               >
 
-                {/* ORDER HEADER */}
+                {/* ================= ORDER HEADER ================= */}
 
-                <div className="flex flex-col md:flex-row md:justify-between gap-4 border-b pb-4 mb-4">
+                <div className="order-card-header">
 
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Order placed
-                    </p>
+                  <div className="order-meta">
 
-                    <p className="font-medium">
-                      {new Date(
-                        order.createdAt
-                      ).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
+                    <div className="order-meta-item">
+
+                      <span>
+                        Order placed
+                      </span>
+
+                      <strong>
+                        {new Date(
+                          order.createdAt
+                        ).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </strong>
+
+                    </div>
+
+                    <div className="order-meta-item">
+
+                      <span>
+                        Total
+                      </span>
+
+                      <strong>
+                        ₹{order.amount}
+                      </strong>
+
+                    </div>
+
+                    <div className="order-meta-item">
+
+                      <span>
+                        Order ID
+                      </span>
+
+                      <strong className="order-id">
+                        {order._id}
+                      </strong>
+
+                    </div>
+
                   </div>
 
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Order ID
-                    </p>
-
-                    <p className="text-sm font-medium break-all">
-                      {order._id}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Total
-                    </p>
-
-                    <p className="font-semibold">
-                      ₹{order.amount}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Status
-                    </p>
-
-                    <span className="inline-block mt-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                      {order.status}
-                    </span>
+                  <div className="order-status">
+                    {order.status}
                   </div>
 
                 </div>
 
-                {/* PRODUCTS */}
+                {/* ================= PRODUCTS ================= */}
 
-                <div className="space-y-4">
+                <div className="order-products">
 
-                  {order.products.map((product) => (
+                  {order.products.map((product, index) => (
                     <div
-                      key={product._id}
-                      className="flex gap-4"
+                      key={
+                        product._id ||
+                        product.productId ||
+                        index
+                      }
+                      className="order-product"
                     >
 
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        className="w-24 h-28 object-contain border rounded-md"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
+                      <div className="order-product-image-wrapper">
 
-                      <div className="flex-1">
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="order-product-image"
+                          onError={(e) => {
+                            e.currentTarget.style.display =
+                              "none";
+                          }}
+                        />
 
-                        <h3 className="font-medium">
+                      </div>
+
+                      <div className="order-product-info">
+
+                        <h3>
                           {product.title}
                         </h3>
 
-                        <p className="text-gray-600 mt-2">
+                        <p className="order-product-price">
                           ₹{product.price}
                         </p>
 
-                        <p className="text-gray-500">
+                        <p>
                           Quantity: {product.quantity}
                         </p>
 
@@ -205,50 +248,41 @@ const Orders = () => {
 
                 </div>
 
-                {/* ADDRESS */}
+                {/* ================= FOOTER ================= */}
 
-                {order.address && (
-                  <div className="border-t mt-5 pt-4">
+                <div className="order-footer">
 
-                    <h3 className="font-semibold mb-2">
-                      Delivery Address
-                    </h3>
+                  {order.address && (
+                    <div className="order-delivery-summary">
 
-                    <p>
-                      {order.address.fullName}
-                    </p>
+                      <span className="order-footer-label">
+                        Deliver to
+                      </span>
 
-                    <p>
-                      {order.address.addressLine1}
-                    </p>
+                      <div className="order-delivery-main">
 
-                    {order.address.addressLine2 && (
-                      <p>
-                        {order.address.addressLine2}
-                      </p>
-                    )}
+                        <strong>
+                          {order.address.fullName}
+                        </strong>
 
-                    <p>
-                      {order.address.city},{" "}
-                      {order.address.state} -{" "}
-                      {order.address.pincode}
-                    </p>
+                        <span>
+                          {order.address.city},{" "}
+                          {order.address.state}{" "}
+                          {order.address.pincode}
+                        </span>
 
-                    <p className="mt-1">
-                      📞 {order.address.phone}
-                    </p>
+                      </div>
+
+                    </div>
+                  )}
+
+                  <div className="order-footer-right">
+
+                    <div className="order-payment-chip">
+                      {order.paymentMethod || "COD"}
+                    </div>
 
                   </div>
-                )}
-
-                {/* PAYMENT */}
-
-                <div className="border-t mt-5 pt-4">
-
-                  <p>
-                    <strong>Payment:</strong>{" "}
-                    {order.paymentMethod}
-                  </p>
 
                 </div>
 
@@ -259,6 +293,7 @@ const Orders = () => {
         )}
 
       </div>
+
     </div>
   );
 };
