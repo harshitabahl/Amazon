@@ -289,7 +289,7 @@ const Navbar = () => {
 
         <Left>
           <StyledLink to="/">
-            <Logo>Amazon</Logo>
+            <Logo>ShopShere</Logo>
           </StyledLink>
         </Left>
 
