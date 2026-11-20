@@ -1,9 +1,12 @@
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { CartProvider } from "./context/cartContext";
+
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import Wishlist from "./pages/Wishlist";
+import ShoppingAssistant from "./components/ShoppingAssistant";
 
 const Home = lazy(() => import("./pages/Home"));
 const Products = lazy(() => import("./pages/Products"));
@@ -18,6 +21,8 @@ export default function App() {
   return (
     <CartProvider>
       <BrowserRouter>
+        <ShoppingAssistant />
+
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -29,7 +34,6 @@ export default function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success" element={<OrderSuccess />} />
 
-            {/* Profile */}
             <Route path="/profile" element={<Profile />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/wishlist" element={<Wishlist />} />

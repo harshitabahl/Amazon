@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
-  const [address, setAddress] = useState(null);
-  const [loadingAddress, setLoadingAddress] = useState(true);
+const API_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:3001";
+
+const emptyAddress = {
+  fullName: "",
+  phone: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  pincode: "",
+};
+
+const AddressSection = () => {
+  const navigate = useNavigate();
 
   const currentUser = JSON.parse(
     localStorage.getItem("user") || "null"
@@ -12,24 +24,42 @@ const Profile = () => {
 
   const userId = currentUser?._id || currentUser?.id;
 
+  const [address, setAddress] = useState(null);
+  const [form, setForm] = useState(emptyAddress);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const fetchAddress = useCallback(async () => {
     if (!userId) {
-      setAddress(null);
-      setLoadingAddress(false);
+      setLoading(false);
       return;
     }
 
     try {
-      const res = await axios.get(
-        `https://amazon-7t4h.onrender.com/api/address/${userId}`
+      const response = await axios.get(
+        `${API_URL}/api/address/${userId}`
       );
 
-      setAddress(res.data);
+      setAddress(response.data);
+      setForm({
+        fullName: response.data.fullName || "",
+        phone: response.data.phone || "",
+        addressLine1: response.data.addressLine1 || "",
+        addressLine2: response.data.addressLine2 || "",
+        city: response.data.city || "",
+        state: response.data.state || "",
+        pincode: response.data.pincode || "",
+      });
     } catch (err) {
-      console.log("No saved address");
+      if (err.response?.status !== 404) {
+        console.error("Fetch address error:", err);
+      }
+
       setAddress(null);
+      setEditing(true);
     } finally {
-      setLoadingAddress(false);
+      setLoading(false);
     }
   }, [userId]);
 
@@ -37,144 +67,192 @@ const Profile = () => {
     fetchAddress();
   }, [fetchAddress]);
 
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">
-            Please login to view your profile
-          </h2>
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
-          <Link
-            to="/login"
-            className="bg-yellow-400 px-6 py-2 rounded-md"
-          >
-            Login
-          </Link>
-        </div>
+    setForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const saveAddress = async (event) => {
+    event.preventDefault();
+
+    if (!userId) {
+      alert("Please log in before adding an address.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const payload = {
+        userId,
+        ...form,
+      };
+
+      const response = address
+        ? await axios.put(
+            `${API_URL}/api/address/${userId}`,
+            payload
+          )
+        : await axios.post(
+            `${API_URL}/api/address`,
+            payload
+          );
+
+      setAddress(response.data);
+      setForm({
+        fullName: response.data.fullName || "",
+        phone: response.data.phone || "",
+        addressLine1: response.data.addressLine1 || "",
+        addressLine2: response.data.addressLine2 || "",
+        city: response.data.city || "",
+        state: response.data.state || "",
+        pincode: response.data.pincode || "",
+      });
+
+      setEditing(false);
+    } catch (err) {
+      console.error("Save address error:", err);
+
+      alert(
+        err.response?.data?.message ||
+          "Could not save the address."
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="checkout-card">
+        <h2>Delivery Address</h2>
+        <p>Loading address...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="checkout-card">
+      <div className="checkout-card-heading">
+        <h2>Delivery Address</h2>
 
-        <h1 className="text-3xl font-semibold mb-6">
-          Your Account
-        </h1>
-
-        {/* Profile */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-5">
-            👤 Profile
-          </h2>
-
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-500">
-                Name
-              </p>
-
-              <p className="text-lg">
-                {currentUser.username || "Not available"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">
-                Email
-              </p>
-
-              <p className="text-lg">
-                {currentUser.email || "Not available"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Address */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-5">
-            📍 Your Address
-          </h2>
-
-          {loadingAddress ? (
-            <p className="text-gray-500">
-              Loading address...
-            </p>
-          ) : address ? (
-            <div className="space-y-1">
-              <p>
-                <strong>{address.fullName}</strong>
-              </p>
-
-              <p>{address.addressLine1}</p>
-
-              {address.addressLine2 && (
-                <p>{address.addressLine2}</p>
-              )}
-
-              <p>
-                {address.city}, {address.state}
-              </p>
-
-              <p>{address.pincode}</p>
-
-              <p className="mt-2">
-                📞 {address.phone}
-              </p>
-            </div>
-          ) : (
-            <div>
-              <p className="text-gray-500">
-                No saved address.
-              </p>
-
-              <Link
-                to="/checkout"
-                className="inline-block mt-4 bg-yellow-400 px-5 py-2 rounded-md"
-              >
-                + Add Address
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Orders & Wishlist */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          <Link
-            to="/orders"
-            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition"
+        {address && !editing && (
+          <button
+            type="button"
+            className="address-change-btn"
+            onClick={() => setEditing(true)}
           >
-            <h2 className="text-xl font-semibold mb-2">
-              📦 Your Orders
-            </h2>
-
-            <p className="text-gray-600">
-              Track, return, or view your orders
-            </p>
-          </Link>
-
-          <Link
-            to="/wishlist"
-            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition"
-          >
-            <h2 className="text-xl font-semibold mb-2">
-              ❤️ Your Wishlist
-            </h2>
-
-            <p className="text-gray-600">
-              View products you've saved
-            </p>
-          </Link>
-
-        </div>
-
+            Change
+          </button>
+        )}
       </div>
+
+      {address && !editing ? (
+        <div className="saved-address">
+          <strong>{address.fullName}</strong>
+          <p>{address.addressLine1}</p>
+
+          {address.addressLine2 && (
+            <p>{address.addressLine2}</p>
+          )}
+
+          <p>
+            {address.city}, {address.state} {address.pincode}
+          </p>
+
+          <p>Phone: {address.phone}</p>
+        </div>
+      ) : (
+        <form className="address-form" onSubmit={saveAddress}>
+          <input
+            name="fullName"
+            value={form.fullName}
+            onChange={handleChange}
+            placeholder="Full name"
+            required
+          />
+
+          <input
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            placeholder="10-digit mobile number"
+            inputMode="numeric"
+            pattern="[0-9]{10}"
+            required
+          />
+
+          <input
+            name="addressLine1"
+            value={form.addressLine1}
+            onChange={handleChange}
+            placeholder="Flat, house number, building"
+            required
+          />
+
+          <input
+            name="addressLine2"
+            value={form.addressLine2}
+            onChange={handleChange}
+            placeholder="Area, street or landmark (optional)"
+          />
+
+          <div className="address-form-row">
+            <input
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+              placeholder="City"
+              required
+            />
+
+            <input
+              name="state"
+              value={form.state}
+              onChange={handleChange}
+              placeholder="State"
+              required
+            />
+          </div>
+
+          <input
+            name="pincode"
+            value={form.pincode}
+            onChange={handleChange}
+            placeholder="6-digit pincode"
+            inputMode="numeric"
+            pattern="[0-9]{6}"
+            required
+          />
+
+          <div className="address-actions">
+            <button
+              type="submit"
+              className="address-save-btn"
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Use this address"}
+            </button>
+
+            {address && (
+              <button
+                type="button"
+                className="address-cancel-btn"
+                onClick={() => setEditing(false)}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      )}
     </div>
   );
 };
 
-export default Profile;
+export default AddressSection;
