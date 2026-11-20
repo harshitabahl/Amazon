@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -11,9 +13,8 @@ const cartRoutes = require("./routes/cart");
 const addressRoute = require("./routes/address");
 const orderRoute = require("./routes/order");
 const wishlistRoute = require("./routes/wishlist");
+const chatRoute = require("./routes/chat");
 
-
-require("dotenv").config();
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/address", addressRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/wishlist", wishlistRoute);
+app.use("/api/chat", chatRoute);
 
 // ================= DATABASE =================
 
