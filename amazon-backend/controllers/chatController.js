@@ -18,7 +18,8 @@ const stopWords = [
   "within", "upto", "up", "maximum", "max", "budget",
   "rupees", "rs", "in", "on", "can", "you", "get",
   "compare", "comparison", "between", "difference",
-  "vs", "versus", "which", "better"
+  "vs", "versus", "which", "better", "compare", "comparison", "between", "difference",
+"vs", "versus", "which", "better", "only", "just"
 ];
 
 // Map user-friendly words to database categories
@@ -149,7 +150,14 @@ const excludedProductKeywords = {
   "tripod",
   "pouch",
   "bag",
-  "brush"
+  "brush",
+  "tempered",
+  "tempered glass",
+  "screen guard",
+  "screen film",
+  "display guard",
+  "glass compatible",
+  "compatible for"
 ],
 
   
@@ -477,7 +485,33 @@ if (
       return res.status(400).json({
         message: "Message is too long. Please keep it under 1000 characters."
       });
+
+        // Handle greetings without searching products
+    const normalizedMessage = message.trim().toLowerCase();
+
+    const greetings = [
+      "hi",
+      "hello",
+      "hey",
+      "hii",
+      "hiii",
+      "good morning",
+      "good afternoon",
+      "good evening",
+      "thanks",
+      "thank you",
+      "bye",
+      "goodbye"
+    ];
+
+    if (greetings.includes(normalizedMessage.replace(/[!.?,]+$/g, ""))) {
+      return res.status(200).json({
+        reply: "Hi! What can I help you find today?",
+        products: [],
+        productIds: []
+      });
     }
+  }
 
     // Extract shopping requirements
     const { keywords, categories } = extractKeywords(message);
@@ -572,13 +606,14 @@ if (
     let products;
 
     if (previousProductIds.length > 0) {
-      // Fetch products from the previous conversation
+      // Apply new search filters to previously shown products
       products = await Product.find({
-        _id: { $in: previousProductIds },
-        inStock: true,
-        inventory: { $gt: 0 },
-        price: { $gt: 0 }
-      }).lean();
+        ...mongoQuery,
+        _id: { $in: previousProductIds }
+      })
+        .sort({ price: 1 })
+        .limit(40)
+        .lean();
     } else {
       // Perform a fresh product search
       products = await Product.find(mongoQuery)
@@ -586,7 +621,6 @@ if (
         .limit(40)
         .lean();
     }
-
     // Remove duplicate products based on their titles
     const uniqueProducts = [];
     const seenTitles = new Set();
